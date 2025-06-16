@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Test - AI ContentCraft</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="modern-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header role="banner">
+            <nav class="nav-bar" role="navigation">
+                <button class="nav-button active">
+                    <span>📖</span> Story Generator
+                </button>
+                <button class="nav-button">
+                    <span>🗣️</span> Simple TTS
+                </button>
+                <button class="nav-button">
+                    <span>🎭</span> Multi-Voice TTS
+                </button>
+                <button class="nav-button">
+                    <span>🎙️</span> Podcast Generator
+                </button>
+            </nav>
+        </header>
+
+        <main>
+            <section class="page active">
+                <div class="story-container">
+                    <h1>✨ UI Test Page</h1>
+                    
+                    <div class="form-group">
+                        <label for="testInput" class="form-label">📝 Test Input:</label>
+                        <input 
+                            type="text" 
+                            id="testInput" 
+                            class="theme-input" 
+                            placeholder="Enter test text here..."
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="testTextarea" class="form-label">📄 Test Textarea:</label>
+                        <textarea 
+                            id="testTextarea" 
+                            class="text-input" 
+                            placeholder="Enter longer text here..."
+                        ></textarea>
+                    </div>
+                    
+                    <div class="voice-select-container">
+                        <label for="testSelect" class="form-label">🎭 Test Select:</label>
+                        <select id="testSelect" class="voice-select">
+                            <option value="">Choose an option...</option>
+                            <option value="option1">Option 1</option>
+                            <option value="option2">Option 2</option>
+                            <option value="option3">Option 3</option>
+                        </select>
+                    </div>
+                    
+                    <div class="button-container">
+                        <button class="primary-btn" onclick="testNotification('success')">
+                            <span>✅</span> Success Button
+                        </button>
+                        <button class="action-btn" onclick="testNotification('warning')">
+                            <span>⚠️</span> Warning Button
+                        </button>
+                        <button class="delete-btn" onclick="testNotification('error')">
+                            <span>❌</span> Error Button
+                        </button>
+                    </div>
+                    
+                    <div class="script-section">
+                        <div class="section-header">
+                            <span class="section-type narration">Narration</span>
+                            <div class="section-controls">
+                                <select class="voice-select">
+                                    <option>Test Voice</option>
+                                </select>
+                                <button class="delete-btn">Delete</button>
+                            </div>
+                        </div>
+                        <div class="section-content">
+                            <textarea class="text-input" placeholder="Test script content..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container" style="display: block;">
+                        <div class="progress-text">Testing progress: 3/5</div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 60%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="audio-container">
+                        <audio controls>
+                            <source src="" type="audio/wav">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="footer">
+            <p>&copy; 2025 AI ContentCraft UI Test Page</p>
+        </footer>
+    </div>
+
+    <script>
+        // Test notification system
+        function showNotification(message, type = 'info', duration = 5000) {
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(n => n.remove());
+            
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            
+            const icon = {
+                'success': '✅',
+                'error': '❌',
+                'warning': '⚠️',
+                'info': 'ℹ️'
+            }[type] || 'ℹ️';
+            
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span class="notification-icon">${icon}</span>
+                    <span class="notification-message">${message}</span>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateY(-100%)';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, duration);
+        }
+        
+        function testNotification(type) {
+            const messages = {
+                'success': 'This is a success notification!',
+                'warning': 'This is a warning notification!',
+                'error': 'This is an error notification!',
+                'info': 'This is an info notification!'
+            };
+            
+            showNotification(messages[type] || messages.info, type);
+        }
+        
+        // Test loading states
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function() {
+                if (this.classList.contains('loading')) return;
+                
+                this.classList.add('loading');
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    this.classList.remove('loading');
+                    this.disabled = false;
+                }, 2000);
+            });
+        });
+        
+        // Test form validation
+        document.getElementById('testInput').addEventListener('blur', function() {
+            if (!this.value.trim()) {
+                this.classList.add('error');
+            } else {
+                this.classList.remove('error');
+            }
+        });
+    </script>
+</body>
+</html>
