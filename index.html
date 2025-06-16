@@ -3,797 +3,528 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI ContentCraft</title>
-    <style>
-        :root {
-            --primary-color: #4a90e2;
-            --background-color: #f5f7fa;
-        }
+    <meta name="description" content="AI ContentCraft - A powerful content creation tool with story generation, text-to-speech, and image generation capabilities">
+    <meta name="keywords" content="AI, content creation, story generation, text-to-speech, TTS, podcast, image generation">
+    <meta name="author" content="AI ContentCraft">
 
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: var(--background-color);
-        }
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
 
-        .container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            width: 90%;
-            max-width: 600px;
-        }
+    <title>AI ContentCraft - Intelligent Content Creation Platform</title>
 
-        h1 {
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
-        }
+    <!-- External Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="modern-styles.css">
 
-        textarea {
-            width: 100%;
-            height: 120px;
-            border: 2px solid #e1e4e8;
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 16px;
-            resize: vertical;
-            transition: border-color 0.3s;
-        }
+    <!-- Preconnect to external domains for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-        textarea:focus {
-            border-color: var(--primary-color);
-            outline: none;
-        }
 
-        .button-container {
-            display: flex;
-            gap: 10px;
-            margin: 1rem 0;
-        }
-
-        button {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 12px 24px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        button:hover {
-            background: #357abd;
-        }
-
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .progress-container {
-            margin: 1rem 0;
-            display: none;
-        }
-
-        .progress-bar {
-            height: 4px;
-            background: #e1e4e8;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .progress {
-            height: 100%;
-            background: var(--primary-color);
-            width: 0%;
-            transition: width 0.3s;
-        }
-
-        .audio-container {
-            margin-top: 1rem;
-            width: 100%;
-        }
-
-        audio {
-            width: 100%;
-        }
-
-        .spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .history-container {
-            margin-top: 1rem;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .history-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px;
-            border-bottom: 1px solid #e1e4e8;
-        }
-
-        .voice-select-container {
-            margin: 1rem 0;
-        }
-
-        .voice-select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e1e4e8;
-            border-radius: 8px;
-            font-size: 16px;
-            background-color: white;
-            cursor: pointer;
-        }
-
-        .voice-select:focus {
-            border-color: var(--primary-color);
-            outline: none;
-        }
-
-        .tabs-container {
-            margin: 1rem 0;
-            width: 100%;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 1rem;
-        }
-
-        .tab-btn {
-            padding: 8px 16px;
-            border: none;
-            background: #4a90e2;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .tab-btn:hover {
-            background: #357abd;
-        }
-
-        .tab-btn.active {
-            background: #28a745;
-            color: white;
-        }
-
-        .tab-btn.add-tab {
-            background: #ff9800;
-            width: 40px;
-            height: 40px;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-            border-radius: 4px;
-        }
-
-        .tab-btn.add-tab:hover {
-            background: #f57c00;
-        }
-
-        .tab-panels {
-            position: relative;
-        }
-
-        .tab-panel {
-            display: none;
-            gap: 1rem;
-        }
-
-        .tab-panel.active {
-            display: block;
-        }
-
-        .text-input {
-            margin-bottom: 1rem;
-        }
-
-        .story-container,
-        .script-container {
-            margin-bottom: 2rem;
-        }
-
-        h2 {
-            color: var(--primary-color);
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-        }
-
-        #storyText,
-        #scriptText {
-            margin-top: 1rem;
-            min-height: 150px;
-        }
-
-        .theme-input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 2px solid #e1e4e8;
-            border-radius: 8px;
-            font-size: 16px;
-            margin-bottom: 1rem;
-        }
-
-        .theme-input:focus {
-            border-color: var(--primary-color);
-            outline: none;
-        }
-
-        .script-section {
-            margin-bottom: 1rem;
-            padding: 1rem;
-            border: 1px solid #e1e4e8;
-            border-radius: 8px;
-            background: #f8f9fa;
-            cursor: move;
-        }
-
-        .script-section.dragging {
-            opacity: 0.5;
-            border: 2px dashed var(--primary-color);
-        }
-
-        .script-section .drag-handle {
-            cursor: move;
-            padding: 4px;
-            margin-right: 8px;
-            color: #666;
-        }
-
-        .drag-placeholder {
-            border: 2px dashed #ccc;
-            margin-bottom: 1rem;
-            height: 100px;
-            border-radius: 8px;
-            background: #f1f1f1;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .section-controls {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .voice-select {
-            padding: 4px 8px;
-            border-radius: 4px;
-            border: 1px solid #e1e4e8;
-        }
-
-        .delete-btn {
-            background: #dc3545;
-            padding: 4px 8px;
-        }
-
-        .character-input {
-            margin-bottom: 0.5rem;
-            padding: 4px 8px;
-            border: 1px solid #e1e4e8;
-            border-radius: 4px;
-        }
-
-        .progress-text {
-            margin-bottom: 0.5rem;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .nav-bar {
-            background: var(--primary-color);
-            padding: 1rem;
-            margin-bottom: 2rem;
-            border-radius: 8px;
-            display: flex;
-            gap: 1rem;
-        }
-
-        .nav-button {
-            background: transparent;
-            color: white;
-            border: 1px solid white;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .nav-button:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-button.active {
-            background: white;
-            color: var(--primary-color);
-        }
-
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        .simple-tts-container {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .multi-tts-container {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .button-container {
-            display: flex;
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-
-        .action-btn {
-            background: #e1e4e8;
-            color: #24292e;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .action-btn:hover {
-            background: #d1d5da;
-        }
-
-        .primary-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .primary-btn:hover {
-            opacity: 0.9;
-        }
-
-        .script-controls {
-            display: flex;
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-
-        .script-section {
-            position: relative;
-            margin-bottom: 1rem;
-        }
-
-        .section-type {
-            position: absolute;
-            top: 0.5rem;
-            left: 0.5rem;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            color: white;
-        }
-
-        .section-type.narration {
-            background: #6c757d;
-        }
-
-        .section-type.dialogue {
-            background: #28a745;
-        }
-
-        .character-input {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 0.5rem;
-            border: 1px solid #e1e4e8;
-            border-radius: 4px;
-        }
-
-        .character-label {
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-            padding: 4px 8px;
-            background: #f8f9fa;
-            border-radius: 4px;
-            display: inline-block;
-        }
-
-        .section-type {
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            color: white;
-            margin-right: 1rem;
-        }
-
-        .section-type.narration {
-            background: #6c757d;
-        }
-
-        .section-type.dialogue {
-            background: #28a745;
-        }
-
-        .section-content {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .podcast-container {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .topic-section {
-            margin-bottom: 2rem;
-        }
-
-        .topic-input {
-            width: 100%;
-            min-height: 150px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border: 2px solid #e1e4e8;
-            border-radius: 8px;
-            resize: vertical;
-        }
-
-        .voice-selection {
-            margin-bottom: 2rem;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        .character-voices {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .voice-select-group {
-            flex: 1;
-        }
-
-        .voice-select-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-
-        .podcast-sections {
-            margin: 1rem 0;
-        }
-
-        .podcast-dialog {
-            position: relative;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border: 1px solid #e1e4e8;
-            border-radius: 8px;
-            background: #f8f9fa;
-        }
-
-        .host-label {
-            position: absolute;
-            top: 0.5rem;
-            left: 0.5rem;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            color: white;
-        }
-
-        .host-a {
-            background: #007bff;
-        }
-
-        .host-b {
-            background: #28a745;
-        }
-
-        .story-image-container {
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        #storyImageDisplay {
-            margin-top: 10px;
-            min-height: 200px;
-            border: 1px solid #ddd;
-            padding: 10px;
-            background: #f8f9fa;
-        }
-
-        #storyImage {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        #generateImageBtn {
-            padding: 8px 16px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        #generateImageBtn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-    </style>
 </head>
 <body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="sr-only">Skip to main content</a>
+
     <div class="container">
-        <div class="nav-bar">
-            <button class="nav-button active" onclick="switchPage('story')">Story Generator</button>
-            <button class="nav-button" onclick="switchPage('simple')">Simple TTS</button>
-            <button class="nav-button" onclick="switchPage('multi')">Multi-Voice TTS</button>
-            <button class="nav-button" onclick="switchPage('podcast')">Podcast Generator</button>
-        </div>
+        <!-- Header with navigation -->
+        <header role="banner">
+            <nav class="nav-bar" role="navigation" aria-label="Main navigation">
+                <button class="nav-button active" onclick="switchPage('story')" aria-pressed="true" aria-describedby="story-desc">
+                    <span>📖</span> Story Generator
+                </button>
+                <button class="nav-button" onclick="switchPage('simple')" aria-pressed="false" aria-describedby="simple-desc">
+                    <span>🗣️</span> Simple TTS
+                </button>
+                <button class="nav-button" onclick="switchPage('multi')" aria-pressed="false" aria-describedby="multi-desc">
+                    <span>🎭</span> Multi-Voice TTS
+                </button>
+                <button class="nav-button" onclick="switchPage('podcast')" aria-pressed="false" aria-describedby="podcast-desc">
+                    <span>🎙️</span> Podcast Generator
+                </button>
+            </nav>
 
-        <!-- Story Generator Page -->
-        <div id="storyPage" class="page active">
-            <!-- 故事生成部分 -->
-            <div class="story-container">
-                <h1>Story Generation</h1>
-                <input type="text" id="themeInput" class="theme-input" placeholder="Enter story theme...">
-                <button onclick="generateStory()" id="generateStoryBtn">Generate Story</button>
-                <textarea id="storyText" class="text-input" placeholder="Generated story will appear here..."></textarea>
+            <!-- Hidden descriptions for screen readers -->
+            <div class="sr-only">
+                <div id="story-desc">Generate stories and convert them to scripts with images</div>
+                <div id="simple-desc">Convert text to speech with single voice</div>
+                <div id="multi-desc">Create multi-voice audio with different speakers</div>
+                <div id="podcast-desc">Generate podcast content with multiple hosts</div>
             </div>
+        </header>
 
-            <!-- 脚本转换部分 -->
-            <div class="script-container">
-                <h2>Script</h2>
-                <div class="script-buttons">
-                    <button onclick="generateScript()" id="convertToScript" class="btn primary">Convert to Script</button>
-                    <div class="button-row">
-                        <button onclick="generateStoryAudio()" id="generateStoryAudioBtn" class="btn secondary" style="display: none;">
-                            <span class="spinner"></span>
-                            <span id="storyBtnText">Generate Audio</span>
-                        </button>
-                        <button onclick="downloadAllImages()" id="downloadImages" class="btn secondary" style="display: none;">Download All Images</button>
+        <!-- Main content area -->
+        <main id="main-content" role="main">
+
+            <!-- Story Generator Page -->
+            <section id="storyPage" class="page active" aria-labelledby="story-title">
+                <!-- Story Generation Section -->
+                <div class="story-container">
+                    <h1 id="story-title">✨ Story Generation</h1>
+                    <div class="form-group">
+                        <label for="themeInput" class="sr-only">Story theme</label>
+                        <input
+                            type="text"
+                            id="themeInput"
+                            class="theme-input"
+                            placeholder="Enter your story theme (e.g., 'A magical adventure in space')..."
+                            aria-describedby="theme-help"
+                            autocomplete="off"
+                        >
+                        <div id="theme-help" class="sr-only">Enter a theme or topic for your story</div>
                     </div>
-                </div>
-                <div id="scriptSections">
-                    <!-- 脚本段落将在这里动态生成 -->
-                </div>
-                <div class="progress-container" id="storyProgressContainer" style="display: none;">
-                    <div class="progress-text">Generating: <span id="storyCurrentProgress">0</span>/<span id="storyTotalSections">0</span></div>
-                    <div class="progress-bar">
-                        <div class="progress" id="storyProgress"></div>
-                    </div>
-                </div>
-                <div class="audio-container">
-                    <audio id="storyAudioPlayer" controls>
-                        <source src="" type="audio/wav">
-                    </audio>
-                </div>
-            </div>
-        </div>
-
-        <!-- Simple TTS Page -->
-        <div id="simplePage" class="page">
-            <div class="simple-tts-container">
-                <h1>Simple Text to Speech</h1>
-                <textarea 
-                    id="simpleTtsText" 
-                    class="text-input" 
-                    placeholder="Enter text to convert to speech..."
-                    style="min-height: 150px;"
-                ></textarea>
-                <div class="voice-select-container">
-                    <select id="simpleTtsVoice" class="voice-select">
-                        <!-- 声音选项将通过 JavaScript 动态添加 -->
-                    </select>
-                </div>
-                <div class="button-container">
-                    <button onclick="generateSimpleTTS()" id="simpleTtsBtn">
-                        <span class="spinner" id="simpleTtsSpinner"></span>
-                        <span id="simpleTtsButtonText">Generate Audio</span>
-                    </button>
-                </div>
-                <div class="audio-container">
-                    <audio id="simpleTtsPlayer" controls>
-                        <source src="" type="audio/wav">
-                    </audio>
-                </div>
-            </div>
-        </div>
-
-        <!-- Multi-Voice TTS Page -->
-        <div id="multiPage" class="page">
-            <div class="multi-tts-container">
-                <h1>Multi-Voice TTS</h1>
-                
-                <div class="tabs-container">
-                    <div class="tabs">
-                        <button class="tab-btn active" onclick="switchTab(0)">Section 1</button>
-                        <button class="tab-btn" onclick="switchTab(1)">Section 2</button>
-                        <button class="tab-btn add-tab" onclick="addNewTab()">+</button>
-                    </div>
-                    <div class="tab-panels">
-                        <div class="tab-panel active">
-                            <textarea class="text-input" placeholder="Enter text to convert to speech..."></textarea>
-                            <div class="voice-select-container">
-                                <select class="voice-select">
-                                    <option value="">加载中...</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="tab-panel">
-                            <textarea class="text-input" placeholder="Enter text to convert to speech..."></textarea>
-                            <div class="voice-select-container">
-                                <select class="voice-select">
-                                    <option value="">加载中...</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="button-container">
-                    <button onclick="generateAllAudio()" id="generateBtn">
-                        <span class="spinner" id="spinner"></span>
-                        <span id="btnText">Generate All Audio</span>
-                    </button>
-                    <button onclick="exportMergedAudio()" id="exportBtn">Export Merged Audio</button>
-                </div>
-
-                <div class="progress-container" id="progressContainer">
-                    <div class="progress-bar">
-                        <div class="progress" id="progress"></div>
-                    </div>
-                </div>
-
-                <div class="audio-container">
-                    <audio id="multiAudioPlayer" controls>
-                        <source src="" type="audio/wav">
-                    </audio>
-                </div>
-
-                <div class="history-container" id="historyContainer">
-                    <!-- 历史记录将在这里动态添加 -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Podcast Generator Page -->
-        <div id="podcastPage" class="page">
-            <div class="podcast-container">
-                <h1>Podcast Generator</h1>
-                
-                <!-- 主题输入区域 -->
-                <div class="topic-section">
-                    <textarea 
-                        id="podcastTopic" 
-                        class="topic-input" 
-                        placeholder="Enter your podcast topic or content here..."
-                        rows="6"
-                    ></textarea>
-                    <button onclick="generatePodcastContent()" id="generatePodcastBtn" class="primary-btn">
-                        <span class="spinner" id="podcastSpinner"></span>
-                        <span id="podcastBtnText">Generate Podcast</span>
-                    </button>
-                </div>
-
-                <!-- 脚本编辑区域 -->
-                <div class="script-editor" id="podcastScriptEditor" style="display: none;">
-                    <div class="voice-selection">
-                        <h3>Select Voices for Characters</h3>
-                        <div class="character-voices">
-                            <div class="voice-select-group">
-                                <label>Host A:</label>
-                                <select id="hostAVoice" class="voice-select">
-                                    <!-- 声音选项将通过 JavaScript 动态添加 -->
-                                </select>
-                            </div>
-                            <div class="voice-select-group">
-                                <label>Host B:</label>
-                                <select id="hostBVoice" class="voice-select">
-                                    <!-- 声音选项将通过 JavaScript 动态添加 -->
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="script-controls">
-                        <button onclick="generatePodcastScript()" id="generateScriptBtn" class="action-btn">Convert to Script</button>
-                        <button onclick="addPodcastDialog('A')" class="action-btn">Add Host A</button>
-                        <button onclick="addPodcastDialog('B')" class="action-btn">Add Host B</button>
-                        <button onclick="translateAndDownload()" id="translateBtn" class="action-btn">
-                            Translate & Download
-                        </button>
-                    </div>
-
-                    <div id="podcastSections" class="podcast-sections">
-                        <!-- 对话段落将在这里动态生成 -->
-                    </div>
-
                     <div class="button-container">
-                        <button onclick="generatePodcastAudio()" id="generatePodcastAudioBtn" class="primary-btn">
-                            <span class="spinner" id="podcastAudioSpinner"></span>
-                            <span id="podcastAudioBtnText">Generate Audio</span>
+                        <button onclick="generateStory()" id="generateStoryBtn" class="primary-btn" aria-describedby="generate-help">
+                            <span class="spinner" id="storySpinner"></span>
+                            <span id="generateStoryText">🎯 Generate Story</span>
                         </button>
                     </div>
+                    <div id="generate-help" class="sr-only">Click to generate a story based on your theme</div>
 
-                    <div class="progress-container" id="podcastProgressContainer" style="display: none;">
-                        <div class="progress-text">
-                            Generating: <span id="podcastCurrentProgress">0</span>/<span id="podcastTotalSections">0</span>
+                    <div class="form-group">
+                        <label for="storyText" class="sr-only">Generated story content</label>
+                        <textarea
+                            id="storyText"
+                            class="text-input"
+                            placeholder="Your generated story will appear here..."
+                            aria-describedby="story-help"
+                            readonly
+                        ></textarea>
+                        <div id="story-help" class="sr-only">Generated story content will be displayed here</div>
+                    </div>
+                </div>
+
+                <!-- Script Conversion Section -->
+                <div class="script-container">
+                    <h2 id="script-title">🎬 Script Conversion</h2>
+                    <div class="script-buttons">
+                        <button onclick="generateScript()" id="convertToScript" class="btn primary" aria-describedby="convert-help">
+                            <span class="spinner" id="convertSpinner"></span>
+                            <span id="convertText">📝 Convert to Script</span>
+                        </button>
+                        <div class="button-row">
+                            <button onclick="generateStoryAudio()" id="generateStoryAudioBtn" class="btn secondary hidden" aria-describedby="audio-help">
+                                <span class="spinner" id="audioSpinner"></span>
+                                <span id="storyBtnText">🎵 Generate Audio</span>
+                            </button>
+                            <button onclick="downloadAllImages()" id="downloadImages" class="btn secondary hidden" aria-describedby="download-help">
+                                <span>📥</span> Download All Images
+                            </button>
                         </div>
-                        <div class="progress-bar">
-                            <div class="progress" id="podcastProgress"></div>
+                    </div>
+
+                    <!-- Hidden help text for screen readers -->
+                    <div class="sr-only">
+                        <div id="convert-help">Convert your story into a script format with dialogue and narration</div>
+                        <div id="audio-help">Generate audio from the script sections</div>
+                        <div id="download-help">Download all generated images as a zip file</div>
+                    </div>
+
+                    <div id="scriptSections" role="region" aria-label="Script sections">
+                        <!-- Script sections will be dynamically generated here -->
+                    </div>
+
+                    <div class="progress-container hidden" id="storyProgressContainer" role="status" aria-live="polite">
+                        <div class="progress-text">
+                            Generating: <span id="storyCurrentProgress">0</span>/<span id="storyTotalSections">0</span>
+                        </div>
+                        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                            <div class="progress" id="storyProgress"></div>
                         </div>
                     </div>
 
                     <div class="audio-container">
-                        <audio id="podcastAudioPlayer" controls>
+                        <label for="storyAudioPlayer" class="sr-only">Generated story audio</label>
+                        <audio id="storyAudioPlayer" controls preload="none" aria-describedby="audio-player-help">
                             <source src="" type="audio/wav">
+                            Your browser does not support the audio element.
                         </audio>
+                        <div id="audio-player-help" class="sr-only">Audio player for the generated story</div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
+
+            <!-- Simple TTS Page -->
+            <section id="simplePage" class="page" aria-labelledby="simple-title">
+                <div class="simple-tts-container">
+                    <h1 id="simple-title">🗣️ Simple Text to Speech</h1>
+
+                    <div class="form-group">
+                        <label for="simpleTtsText" class="sr-only">Text to convert to speech</label>
+                        <textarea
+                            id="simpleTtsText"
+                            class="text-input"
+                            placeholder="Enter the text you want to convert to speech..."
+                            aria-describedby="simple-text-help"
+                            style="min-height: 150px;"
+                        ></textarea>
+                        <div id="simple-text-help" class="sr-only">Enter any text to convert it to speech</div>
+                    </div>
+
+                    <div class="voice-select-container">
+                        <label for="simpleTtsVoice" class="form-label">🎭 Select Voice:</label>
+                        <select id="simpleTtsVoice" class="voice-select" aria-describedby="voice-help">
+                            <option value="">Loading voices...</option>
+                        </select>
+                        <div id="voice-help" class="sr-only">Choose a voice for text-to-speech conversion</div>
+                    </div>
+
+                    <div class="button-container">
+                        <button onclick="generateSimpleTTS()" id="simpleTtsBtn" class="primary-btn" aria-describedby="simple-generate-help">
+                            <span class="spinner" id="simpleTtsSpinner"></span>
+                            <span id="simpleTtsButtonText">🎵 Generate Audio</span>
+                        </button>
+                    </div>
+                    <div id="simple-generate-help" class="sr-only">Generate audio from the entered text</div>
+
+                    <div class="audio-container">
+                        <label for="simpleTtsPlayer" class="sr-only">Generated audio</label>
+                        <audio id="simpleTtsPlayer" controls preload="none" aria-describedby="simple-audio-help">
+                            <source src="" type="audio/wav">
+                            Your browser does not support the audio element.
+                        </audio>
+                        <div id="simple-audio-help" class="sr-only">Audio player for the generated speech</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Multi-Voice TTS Page -->
+            <section id="multiPage" class="page" aria-labelledby="multi-title">
+                <div class="multi-tts-container">
+                    <h1 id="multi-title">🎭 Multi-Voice Text to Speech</h1>
+
+                    <div class="tabs-container">
+                        <div class="tabs" role="tablist" aria-label="Text sections">
+                            <button class="tab-btn active" onclick="switchTab(0)" role="tab" aria-selected="true" aria-controls="panel-0" id="tab-0">
+                                📝 Section 1
+                            </button>
+                            <button class="tab-btn" onclick="switchTab(1)" role="tab" aria-selected="false" aria-controls="panel-1" id="tab-1">
+                                📝 Section 2
+                            </button>
+                            <button class="tab-btn add-tab" onclick="addNewTab()" aria-label="Add new section">
+                                ➕
+                            </button>
+                        </div>
+
+                        <div class="tab-panels">
+                            <div class="tab-panel active" role="tabpanel" aria-labelledby="tab-0" id="panel-0">
+                                <div class="form-group">
+                                    <label for="text-0" class="sr-only">Text for section 1</label>
+                                    <textarea
+                                        id="text-0"
+                                        class="text-input"
+                                        placeholder="Enter text for this section..."
+                                        aria-describedby="text-help-0"
+                                    ></textarea>
+                                    <div id="text-help-0" class="sr-only">Enter text to be spoken by the selected voice</div>
+                                </div>
+                                <div class="voice-select-container">
+                                    <label for="voice-0" class="form-label">🎭 Voice:</label>
+                                    <select id="voice-0" class="voice-select" aria-describedby="voice-help-0">
+                                        <option value="">Loading voices...</option>
+                                    </select>
+                                    <div id="voice-help-0" class="sr-only">Select voice for this section</div>
+                                </div>
+                            </div>
+
+                            <div class="tab-panel" role="tabpanel" aria-labelledby="tab-1" id="panel-1">
+                                <div class="form-group">
+                                    <label for="text-1" class="sr-only">Text for section 2</label>
+                                    <textarea
+                                        id="text-1"
+                                        class="text-input"
+                                        placeholder="Enter text for this section..."
+                                        aria-describedby="text-help-1"
+                                    ></textarea>
+                                    <div id="text-help-1" class="sr-only">Enter text to be spoken by the selected voice</div>
+                                </div>
+                                <div class="voice-select-container">
+                                    <label for="voice-1" class="form-label">🎭 Voice:</label>
+                                    <select id="voice-1" class="voice-select" aria-describedby="voice-help-1">
+                                        <option value="">Loading voices...</option>
+                                    </select>
+                                    <div id="voice-help-1" class="sr-only">Select voice for this section</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="button-container">
+                        <button onclick="generateAllAudio()" id="generateBtn" class="primary-btn" aria-describedby="generate-all-help">
+                            <span class="spinner" id="spinner"></span>
+                            <span id="btnText">🎵 Generate All Audio</span>
+                        </button>
+                        <button onclick="exportMergedAudio()" id="exportBtn" class="action-btn" aria-describedby="export-help">
+                            <span>📥</span> Export Merged Audio
+                        </button>
+                    </div>
+
+                    <!-- Hidden help text -->
+                    <div class="sr-only">
+                        <div id="generate-all-help">Generate audio for all sections and merge them together</div>
+                        <div id="export-help">Download the merged audio file</div>
+                    </div>
+
+                    <div class="progress-container hidden" id="progressContainer" role="status" aria-live="polite">
+                        <div class="progress-text">Processing sections...</div>
+                        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                            <div class="progress" id="progress"></div>
+                        </div>
+                    </div>
+
+                    <div class="audio-container">
+                        <label for="multiAudioPlayer" class="sr-only">Generated merged audio</label>
+                        <audio id="multiAudioPlayer" controls preload="none" aria-describedby="multi-audio-help">
+                            <source src="" type="audio/wav">
+                            Your browser does not support the audio element.
+                        </audio>
+                        <div id="multi-audio-help" class="sr-only">Audio player for the merged multi-voice audio</div>
+                    </div>
+
+                    <div class="history-container" id="historyContainer" role="region" aria-label="Generation history">
+                        <!-- History items will be dynamically added here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Podcast Generator Page -->
+            <section id="podcastPage" class="page" aria-labelledby="podcast-title">
+                <div class="podcast-container">
+                    <h1 id="podcast-title">🎙️ Podcast Generator</h1>
+
+                    <!-- Topic Input Section -->
+                    <div class="topic-section">
+                        <div class="form-group">
+                            <label for="podcastTopic" class="form-label">📝 Podcast Topic or Content:</label>
+                            <textarea
+                                id="podcastTopic"
+                                class="topic-input"
+                                placeholder="Enter your podcast topic, outline, or content here. Be as detailed as you want..."
+                                rows="6"
+                                aria-describedby="topic-help"
+                            ></textarea>
+                            <div id="topic-help" class="sr-only">Enter the topic or content for your podcast</div>
+                        </div>
+
+                        <div class="button-container">
+                            <button onclick="generatePodcastContent()" id="generatePodcastBtn" class="primary-btn" aria-describedby="podcast-generate-help">
+                                <span class="spinner" id="podcastSpinner"></span>
+                                <span id="podcastBtnText">🎯 Generate Podcast Content</span>
+                            </button>
+                        </div>
+                        <div id="podcast-generate-help" class="sr-only">Generate podcast content based on your topic</div>
+                    </div>
+
+                    <!-- Script Editor Section -->
+                    <div class="script-editor hidden" id="podcastScriptEditor">
+                        <div class="voice-selection">
+                            <h3>🎭 Select Voices for Hosts</h3>
+                            <div class="character-voices">
+                                <div class="voice-select-group">
+                                    <label for="hostAVoice">🎤 Host A:</label>
+                                    <select id="hostAVoice" class="voice-select" aria-describedby="host-a-help">
+                                        <option value="">Loading voices...</option>
+                                    </select>
+                                    <div id="host-a-help" class="sr-only">Select voice for the first podcast host</div>
+                                </div>
+                                <div class="voice-select-group">
+                                    <label for="hostBVoice">🎤 Host B:</label>
+                                    <select id="hostBVoice" class="voice-select" aria-describedby="host-b-help">
+                                        <option value="">Loading voices...</option>
+                                    </select>
+                                    <div id="host-b-help" class="sr-only">Select voice for the second podcast host</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="script-controls">
+                            <button onclick="generatePodcastScript()" id="generateScriptBtn" class="action-btn" aria-describedby="script-help">
+                                <span>📝</span> Convert to Script
+                            </button>
+                            <button onclick="addPodcastDialog('A')" class="action-btn" aria-describedby="add-a-help">
+                                <span>➕</span> Add Host A
+                            </button>
+                            <button onclick="addPodcastDialog('B')" class="action-btn" aria-describedby="add-b-help">
+                                <span>➕</span> Add Host B
+                            </button>
+                            <button onclick="translateAndDownload()" id="translateBtn" class="action-btn" aria-describedby="translate-help">
+                                <span>🌐</span> Translate & Download
+                            </button>
+                        </div>
+
+                        <!-- Hidden help text -->
+                        <div class="sr-only">
+                            <div id="script-help">Convert content to dialogue script format</div>
+                            <div id="add-a-help">Add a new dialogue section for Host A</div>
+                            <div id="add-b-help">Add a new dialogue section for Host B</div>
+                            <div id="translate-help">Translate content and download script</div>
+                        </div>
+
+                        <div id="podcastSections" class="podcast-sections" role="region" aria-label="Podcast dialogue sections">
+                            <!-- Dialogue sections will be dynamically generated here -->
+                        </div>
+
+                        <div class="button-container">
+                            <button onclick="generatePodcastAudio()" id="generatePodcastAudioBtn" class="primary-btn" aria-describedby="podcast-audio-help">
+                                <span class="spinner" id="podcastAudioSpinner"></span>
+                                <span id="podcastAudioBtnText">🎵 Generate Podcast Audio</span>
+                            </button>
+                        </div>
+                        <div id="podcast-audio-help" class="sr-only">Generate audio for the entire podcast</div>
+
+                        <div class="progress-container hidden" id="podcastProgressContainer" role="status" aria-live="polite">
+                            <div class="progress-text">
+                                Generating: <span id="podcastCurrentProgress">0</span>/<span id="podcastTotalSections">0</span>
+                            </div>
+                            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                                <div class="progress" id="podcastProgress"></div>
+                            </div>
+                        </div>
+
+                        <div class="audio-container">
+                            <label for="podcastAudioPlayer" class="sr-only">Generated podcast audio</label>
+                            <audio id="podcastAudioPlayer" controls preload="none" aria-describedby="podcast-player-help">
+                                <source src="" type="audio/wav">
+                                Your browser does not support the audio element.
+                            </audio>
+                            <div id="podcast-player-help" class="sr-only">Audio player for the generated podcast</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer role="contentinfo" class="footer">
+            <p>&copy; 2025 AI ContentCraft. Built with ❤️ for creators.</p>
+        </footer>
     </div>
 
     <script>
         let voices = [];
+
+        // ===== NOTIFICATION SYSTEM =====
+        function showNotification(message, type = 'info', duration = 5000) {
+            // Remove existing notifications
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(n => n.remove());
+
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.setAttribute('role', 'alert');
+            notification.setAttribute('aria-live', 'polite');
+
+            const icon = {
+                'success': '✅',
+                'error': '❌',
+                'warning': '⚠️',
+                'info': 'ℹ️'
+            }[type] || 'ℹ️';
+
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span class="notification-icon">${icon}</span>
+                    <span class="notification-message">${message}</span>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()" aria-label="Close notification">×</button>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Auto-remove after duration
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateY(-100%)';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, duration);
+        }
+
+        // ===== LOADING STATE MANAGEMENT =====
+        function setLoadingState(element, isLoading, loadingText = 'Loading...', originalText = '') {
+            if (isLoading) {
+                element.disabled = true;
+                element.classList.add('loading');
+                const spinner = element.querySelector('.spinner');
+                if (spinner) spinner.style.display = 'inline-block';
+
+                const textElement = element.querySelector('span:not(.spinner)');
+                if (textElement) {
+                    textElement.dataset.originalText = textElement.textContent;
+                    textElement.textContent = loadingText;
+                }
+            } else {
+                element.disabled = false;
+                element.classList.remove('loading');
+                const spinner = element.querySelector('.spinner');
+                if (spinner) spinner.style.display = 'none';
+
+                const textElement = element.querySelector('span:not(.spinner)');
+                if (textElement) {
+                    textElement.textContent = textElement.dataset.originalText || originalText;
+                }
+            }
+        }
+
+        // ===== ACCESSIBILITY HELPERS =====
+        function announceToScreenReader(message) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.setAttribute('aria-atomic', 'true');
+            announcement.className = 'sr-only';
+            announcement.textContent = message;
+
+            document.body.appendChild(announcement);
+            setTimeout(() => announcement.remove(), 1000);
+        }
+
+        // ===== FORM VALIDATION =====
+        function validateForm(formElement) {
+            const requiredFields = formElement.querySelectorAll('[required]');
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('error');
+                    field.setAttribute('aria-invalid', 'true');
+                    isValid = false;
+                } else {
+                    field.classList.remove('error');
+                    field.setAttribute('aria-invalid', 'false');
+                }
+            });
+
+            return isValid;
+        }
+
+        // ===== ELEMENT VISIBILITY HELPERS =====
+        function showElement(element) {
+            if (typeof element === 'string') {
+                element = document.getElementById(element);
+            }
+            if (element) {
+                element.classList.remove('hidden');
+                element.style.display = '';
+            }
+        }
+
+        function hideElement(element) {
+            if (typeof element === 'string') {
+                element = document.getElementById(element);
+            }
+            if (element) {
+                element.classList.add('hidden');
+            }
+        }
+
+        function toggleElement(element, show) {
+            if (show) {
+                showElement(element);
+            } else {
+                hideElement(element);
+            }
+        }
 
         async function loadVoices() {
             try {
@@ -1006,34 +737,47 @@
         async function generateStory() {
             const theme = document.getElementById('themeInput').value.trim();
             if (!theme) {
-                alert('Please enter a story theme');
+                showNotification('Please enter a story theme', 'warning');
+                document.getElementById('themeInput').focus();
                 return;
             }
 
             const generateStoryBtn = document.getElementById('generateStoryBtn');
             const storyText = document.getElementById('storyText');
-            
+            const spinner = document.getElementById('storySpinner');
+            const btnText = document.getElementById('generateStoryText');
+
+            // Update UI state
             generateStoryBtn.disabled = true;
-            generateStoryBtn.textContent = 'Generating...';
-            
+            spinner.style.display = 'inline-block';
+            btnText.textContent = 'Generating Story...';
+            storyText.value = '';
+
             try {
                 const response = await fetch('/generate-story', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ theme })
                 });
-                
+
                 const data = await response.json();
                 if (data.success) {
                     storyText.value = data.story;
+                    storyText.removeAttribute('readonly');
+                    showNotification('Story generated successfully!', 'success');
+
+                    // Scroll to story text for better UX
+                    storyText.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 } else {
-                    alert('生成故事失败: ' + data.error);
+                    throw new Error(data.error || 'Failed to generate story');
                 }
             } catch (error) {
-                alert('生成故事失败: ' + error.message);
+                console.error('Story generation error:', error);
+                showNotification('Failed to generate story: ' + error.message, 'error');
             } finally {
                 generateStoryBtn.disabled = false;
-                generateStoryBtn.textContent = 'Generate Story';
+                spinner.style.display = 'none';
+                btnText.textContent = '🎯 Generate Story';
             }
         }
 
@@ -1086,8 +830,8 @@
                                     });
 
                                     // 显示所有按钮
-                                    document.getElementById('generateStoryAudioBtn').style.display = 'block';
-                                    document.getElementById('downloadImages').style.display = 'block';
+                                    showElement('generateStoryAudioBtn');
+                                    showElement('downloadImages');
                                     
                                     // 添加脚本控制按钮
                                     const scriptControls = document.createElement('div');
@@ -1485,30 +1229,62 @@
             e.stopPropagation();
         }
 
-        // 页面切换函数
+        // Enhanced page switching function with accessibility support
         function switchPage(pageId) {
-            // 更新导航按钮状态
+            // Update navigation button states
             document.querySelectorAll('.nav-button').forEach(btn => {
                 btn.classList.remove('active');
+                btn.setAttribute('aria-pressed', 'false');
             });
-            const activeBtn = document.querySelector(`.nav-button[onclick*="${pageId}"]`);
-            if (activeBtn) activeBtn.classList.add('active');
 
-            // 更新页面显示
+            const activeBtn = document.querySelector(`.nav-button[onclick*="${pageId}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+                activeBtn.setAttribute('aria-pressed', 'true');
+            }
+
+            // Update page display with fade animation
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
+                page.setAttribute('aria-hidden', 'true');
             });
+
             const activePage = document.getElementById(`${pageId}Page`);
-            if (activePage) activePage.classList.add('active');
+            if (activePage) {
+                activePage.classList.add('active');
+                activePage.setAttribute('aria-hidden', 'false');
+
+                // Focus management for accessibility
+                const firstFocusable = activePage.querySelector('input, textarea, button, select');
+                if (firstFocusable) {
+                    setTimeout(() => firstFocusable.focus(), 100);
+                }
+            }
+
+            // Update page title
+            const pageTitles = {
+                'story': 'Story Generator',
+                'simple': 'Simple TTS',
+                'multi': 'Multi-Voice TTS',
+                'podcast': 'Podcast Generator'
+            };
+            document.title = `${pageTitles[pageId]} - AI ContentCraft`;
         }
 
-        // 简单TTS生成函数
+        // Enhanced Simple TTS generation function
         async function generateSimpleTTS() {
             const text = document.getElementById('simpleTtsText').value.trim();
             const voice = document.getElementById('simpleTtsVoice').value;
-            
+
             if (!text) {
-                alert('Please enter some text');
+                showNotification('Please enter some text to convert', 'warning');
+                document.getElementById('simpleTtsText').focus();
+                return;
+            }
+
+            if (!voice) {
+                showNotification('Please select a voice', 'warning');
+                document.getElementById('simpleTtsVoice').focus();
                 return;
             }
 
@@ -1516,12 +1292,12 @@
             const spinner = document.getElementById('simpleTtsSpinner');
             const buttonText = document.getElementById('simpleTtsButtonText');
 
-            // 更新按钮状态
-            button.disabled = true;
-            spinner.style.display = 'inline-block';
-            buttonText.textContent = 'Generating...';
+            // Update UI state
+            setLoadingState(button, true, '🎵 Generating Audio...');
 
             try {
+                announceToScreenReader('Generating audio, please wait');
+
                 const response = await fetch('/generate-and-merge', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1543,13 +1319,19 @@
                     const lines = decoder.decode(value).split('\n');
                     for (const line of lines) {
                         if (!line.trim()) continue;
-                        
+
                         try {
                             const data = JSON.parse(line);
                             if (data.type === 'complete' && data.success) {
                                 const audioPlayer = document.getElementById('simpleTtsPlayer');
                                 audioPlayer.src = data.filename;
                                 audioPlayer.load();
+
+                                showNotification('Audio generated successfully!', 'success');
+                                announceToScreenReader('Audio generation completed');
+
+                                // Scroll to audio player
+                                audioPlayer.scrollIntoView({ behavior: 'smooth', block: 'center' });
                             }
                         } catch (e) {
                             console.warn('Failed to parse line:', line, e);
@@ -1557,12 +1339,11 @@
                     }
                 }
             } catch (error) {
-                alert('Audio generation failed: ' + error.message);
+                console.error('TTS generation error:', error);
+                showNotification('Failed to generate audio: ' + error.message, 'error');
+                announceToScreenReader('Audio generation failed');
             } finally {
-                // 恢复按钮状态
-                button.disabled = false;
-                spinner.style.display = 'none';
-                buttonText.textContent = 'Generate Audio';
+                setLoadingState(button, false, '', '🎵 Generate Audio');
             }
         }
 
@@ -1667,7 +1448,7 @@
                 const data = await response.json();
                 if (data.success) {
                     document.getElementById('podcastTopic').value = data.content;
-                    document.getElementById('podcastScriptEditor').style.display = 'block';
+                    showElement('podcastScriptEditor');
                 } else {
                     throw new Error(data.error);
                 }
