@@ -8,4 +8,5 @@ build/
 .DS_Store
 *.log
 .cache/
-coverage/ 
+coverage/
+output/ 

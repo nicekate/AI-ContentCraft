@@ -304,41 +304,61 @@ app.post('/generate-script', async (req, res) => {
 // 添加播客生成路由
 app.post('/generate-podcast', async (req, res) => {
     const { topic } = req.body;
+
+    console.log('=== PODCAST GENERATION DEBUG ===');
+    console.log('Topic:', topic);
+    console.log('DeepSeek API Key:', process.env.DEEPSEEK_API_KEY ? 'Present' : 'Missing');
+    console.log('API Key length:', process.env.DEEPSEEK_API_KEY ? process.env.DEEPSEEK_API_KEY.length : 0);
+
     try {
+        console.log('Making request to DeepSeek API...');
         const response = await openai.chat.completions.create({
             model: 'deepseek-chat',
             messages: [
-                { 
-                    role: 'system', 
-                    content: 'You are a professional podcast content creator. Create engaging and informative podcast content that is suitable for a conversation between two hosts.' 
+                {
+                    role: 'system',
+                    content: 'You are a professional podcast content creator. Create engaging and informative podcast content that is suitable for a conversation between two hosts.'
                 },
-                { 
-                    role: 'user', 
-                    content: `Create a podcast discussion outline about "${topic}". The content should be informative and conversational.` 
+                {
+                    role: 'user',
+                    content: `Create a podcast discussion outline about "${topic}". The content should be informative and conversational.`
                 }
             ],
         });
-        
-        res.json({ 
+
+        console.log('DeepSeek API response received successfully');
+        res.json({
             success: true,
-            content: response.choices[0].message.content 
+            content: response.choices[0].message.content
         });
     } catch (error) {
-        res.status(500).json({ 
-            success: false, 
-            error: error.message 
+        console.error('=== PODCAST GENERATION ERROR ===');
+        console.error('Error message:', error.message);
+        console.error('Error status:', error.status);
+        console.error('Error code:', error.code);
+        console.error('Full error:', error);
+
+        res.status(500).json({
+            success: false,
+            error: error.message
         });
     }
 });
 
 app.post('/generate-podcast-script', async (req, res) => {
     const { content } = req.body;
+
+    console.log('=== PODCAST SCRIPT GENERATION DEBUG ===');
+    console.log('Content length:', content ? content.length : 0);
+    console.log('DeepSeek API Key:', process.env.DEEPSEEK_API_KEY ? 'Present' : 'Missing');
+
     try {
+        console.log('Making request to DeepSeek API for script generation...');
         const response = await openai.chat.completions.create({
             model: 'deepseek-chat',
             messages: [
-                { 
-                    role: 'system', 
+                {
+                    role: 'system',
                     content: `Convert content into a natural English conversation between two podcast hosts (A and B). Requirements:
 1. Format the response as JSON array of dialog objects
 2. Each object should have 'host' (either 'A' or 'B') and 'text' fields
@@ -348,15 +368,16 @@ Format example:
 [
     {"host": "A", "text": "Welcome to our show..."},
     {"host": "B", "text": "Today we're discussing..."}
-]` 
+]`
                 },
-                { 
-                    role: 'user', 
-                    content: `Convert this content into a podcast conversation:\n${content}` 
+                {
+                    role: 'user',
+                    content: `Convert this content into a podcast conversation:\n${content}`
                 }
             ],
         });
-        
+
+        console.log('DeepSeek API response received for script generation');
         const scriptContent = response.choices[0].message.content;
         let scriptData;
         try {
@@ -370,14 +391,20 @@ Format example:
             }
         }
 
-        res.json({ 
+        res.json({
             success: true,
             script: scriptData
         });
     } catch (error) {
-        res.status(500).json({ 
-            success: false, 
-            error: error.message 
+        console.error('=== PODCAST SCRIPT GENERATION ERROR ===');
+        console.error('Error message:', error.message);
+        console.error('Error status:', error.status);
+        console.error('Error code:', error.code);
+        console.error('Full error:', error);
+
+        res.status(500).json({
+            success: false,
+            error: error.message
         });
     }
 });
@@ -788,6 +815,11 @@ const openai = new OpenAI({
     apiKey: process.env.DEEPSEEK_API_KEY || '', // 从环境变量读取
 });
 
+// 备用 OpenAI 客户端 (如果 DeepSeek 余额不足)
+const openaiBackup = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || '', // 需要添加 OpenAI API Key
+});
+
 // 在 app.use 中间件部分添加
 app.use((req, res, next) => {
     // 只允许本地域名访问
@@ -799,6 +831,66 @@ app.use((req, res, next) => {
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     }
     next();
+});
+
+// 添加 API 测试端点
+app.get('/test-apis', async (req, res) => {
+    const results = {
+        deepseek: { status: 'unknown', error: null },
+        replicate: { status: 'unknown', error: null }
+    };
+
+    // 测试 DeepSeek API
+    try {
+        console.log('Testing DeepSeek API...');
+        console.log('API Key:', process.env.DEEPSEEK_API_KEY ? `Present (${process.env.DEEPSEEK_API_KEY.length} chars)` : 'Missing');
+
+        const response = await openai.chat.completions.create({
+            model: 'deepseek-chat',
+            messages: [{ role: 'user', content: 'Hello, this is a test.' }],
+            max_tokens: 10
+        });
+
+        results.deepseek.status = 'success';
+        console.log('DeepSeek API test successful');
+    } catch (error) {
+        results.deepseek.status = 'error';
+        results.deepseek.error = {
+            message: error.message,
+            status: error.status,
+            code: error.code
+        };
+        console.error('DeepSeek API test failed:', error.message);
+    }
+
+    // 测试 Replicate API
+    try {
+        console.log('Testing Replicate API...');
+        console.log('API Token:', process.env.REPLICATE_API_TOKEN ? `Present (${process.env.REPLICATE_API_TOKEN.length} chars)` : 'Missing');
+
+        // 简单的模型列表请求来测试连接
+        const response = await fetch('https://api.replicate.com/v1/models', {
+            headers: {
+                'Authorization': `Token ${process.env.REPLICATE_API_TOKEN}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            results.replicate.status = 'success';
+            console.log('Replicate API test successful');
+        } else {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+    } catch (error) {
+        results.replicate.status = 'error';
+        results.replicate.error = {
+            message: error.message
+        };
+        console.error('Replicate API test failed:', error.message);
+    }
+
+    res.json(results);
 });
 
 // 添加翻译路由
