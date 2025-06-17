@@ -8,4 +8,7 @@ build/
 .DS_Store
 *.log
 .cache/
-coverage/ 
+coverage/
+
+# 输出文件目录
+output/
