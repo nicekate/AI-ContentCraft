@@ -14,6 +14,9 @@ dotenv.config();
 // 定义 execAsync
 const execAsync = promisify(exec);
 
+// 调试模式控制
+const DEBUG_MODE = process.env.NODE_ENV !== 'production';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = 3000;
@@ -305,13 +308,14 @@ app.post('/generate-script', async (req, res) => {
 app.post('/generate-podcast', async (req, res) => {
     const { topic } = req.body;
 
-    console.log('=== PODCAST GENERATION DEBUG ===');
-    console.log('Topic:', topic);
-    console.log('DeepSeek API Key:', process.env.DEEPSEEK_API_KEY ? 'Present' : 'Missing');
-    console.log('API Key length:', process.env.DEEPSEEK_API_KEY ? process.env.DEEPSEEK_API_KEY.length : 0);
+    if (DEBUG_MODE) {
+        console.log('=== PODCAST GENERATION DEBUG ===');
+        console.log('Topic:', topic);
+        console.log('DeepSeek API Key:', process.env.DEEPSEEK_API_KEY ? 'Present' : 'Missing');
+    }
 
     try {
-        console.log('Making request to DeepSeek API...');
+        if (DEBUG_MODE) console.log('Making request to DeepSeek API...');
         const response = await openai.chat.completions.create({
             model: 'deepseek-chat',
             messages: [
@@ -326,7 +330,7 @@ app.post('/generate-podcast', async (req, res) => {
             ],
         });
 
-        console.log('DeepSeek API response received successfully');
+        if (DEBUG_MODE) console.log('DeepSeek API response received successfully');
         res.json({
             success: true,
             content: response.choices[0].message.content
@@ -348,12 +352,14 @@ app.post('/generate-podcast', async (req, res) => {
 app.post('/generate-podcast-script', async (req, res) => {
     const { content } = req.body;
 
-    console.log('=== PODCAST SCRIPT GENERATION DEBUG ===');
-    console.log('Content length:', content ? content.length : 0);
-    console.log('DeepSeek API Key:', process.env.DEEPSEEK_API_KEY ? 'Present' : 'Missing');
+    if (DEBUG_MODE) {
+        console.log('=== PODCAST SCRIPT GENERATION DEBUG ===');
+        console.log('Content length:', content ? content.length : 0);
+        console.log('DeepSeek API Key:', process.env.DEEPSEEK_API_KEY ? 'Present' : 'Missing');
+    }
 
     try {
-        console.log('Making request to DeepSeek API for script generation...');
+        if (DEBUG_MODE) console.log('Making request to DeepSeek API for script generation...');
         const response = await openai.chat.completions.create({
             model: 'deepseek-chat',
             messages: [
@@ -377,7 +383,7 @@ Format example:
             ],
         });
 
-        console.log('DeepSeek API response received for script generation');
+        if (DEBUG_MODE) console.log('DeepSeek API response received for script generation');
         const scriptContent = response.choices[0].message.content;
         let scriptData;
         try {
@@ -842,8 +848,10 @@ app.get('/test-apis', async (req, res) => {
 
     // 测试 DeepSeek API
     try {
-        console.log('Testing DeepSeek API...');
-        console.log('API Key:', process.env.DEEPSEEK_API_KEY ? `Present (${process.env.DEEPSEEK_API_KEY.length} chars)` : 'Missing');
+        if (DEBUG_MODE) {
+            console.log('Testing DeepSeek API...');
+            console.log('API Key:', process.env.DEEPSEEK_API_KEY ? 'Present' : 'Missing');
+        }
 
         const response = await openai.chat.completions.create({
             model: 'deepseek-chat',
@@ -852,7 +860,7 @@ app.get('/test-apis', async (req, res) => {
         });
 
         results.deepseek.status = 'success';
-        console.log('DeepSeek API test successful');
+        if (DEBUG_MODE) console.log('DeepSeek API test successful');
     } catch (error) {
         results.deepseek.status = 'error';
         results.deepseek.error = {
@@ -865,8 +873,10 @@ app.get('/test-apis', async (req, res) => {
 
     // 测试 Replicate API
     try {
-        console.log('Testing Replicate API...');
-        console.log('API Token:', process.env.REPLICATE_API_TOKEN ? `Present (${process.env.REPLICATE_API_TOKEN.length} chars)` : 'Missing');
+        if (DEBUG_MODE) {
+            console.log('Testing Replicate API...');
+            console.log('API Token:', process.env.REPLICATE_API_TOKEN ? 'Present' : 'Missing');
+        }
 
         // 简单的模型列表请求来测试连接
         const response = await fetch('https://api.replicate.com/v1/models', {
@@ -878,7 +888,7 @@ app.get('/test-apis', async (req, res) => {
 
         if (response.ok) {
             results.replicate.status = 'success';
-            console.log('Replicate API test successful');
+            if (DEBUG_MODE) console.log('Replicate API test successful');
         } else {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
