@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AI ContentCraft - A powerful content creation tool with story generation, text-to-speech, and image generation capabilities">
-    <meta name="keywords" content="AI, content creation, story generation, text-to-speech, TTS, podcast, image generation">
+    <meta name="description" content="AI ContentCraft - 强大的内容创作工具，具备故事生成、文本转语音和图像生成功能">
+    <meta name="keywords" content="AI, 内容创作, 故事生成, 文本转语音, TTS, 播客, 图像生成">
     <meta name="author" content="AI ContentCraft">
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
 
-    <title>AI ContentCraft - Intelligent Content Creation Platform</title>
+    <title>AI ContentCraft - 智能内容创作平台</title>
 
     <!-- External Stylesheets -->
     <link rel="stylesheet" href="styles.css">
@@ -29,27 +29,27 @@
     <div class="container">
         <!-- Header with navigation -->
         <header role="banner">
-            <nav class="nav-bar" role="navigation" aria-label="Main navigation">
+            <nav class="nav-bar" role="navigation" aria-label="主导航">
                 <button class="nav-button active" onclick="switchPage('story')" aria-pressed="true" aria-describedby="story-desc">
-                    <span>📖</span> Story Generator
+                    <span>📖</span> 故事生成器
                 </button>
                 <button class="nav-button" onclick="switchPage('simple')" aria-pressed="false" aria-describedby="simple-desc">
-                    <span>🗣️</span> Simple TTS
+                    <span>🗣️</span> 简单语音合成
                 </button>
                 <button class="nav-button" onclick="switchPage('multi')" aria-pressed="false" aria-describedby="multi-desc">
-                    <span>🎭</span> Multi-Voice TTS
+                    <span>🎭</span> 多声音语音合成
                 </button>
                 <button class="nav-button" onclick="switchPage('podcast')" aria-pressed="false" aria-describedby="podcast-desc">
-                    <span>🎙️</span> Podcast Generator
+                    <span>🎙️</span> 播客生成器
                 </button>
             </nav>
 
             <!-- Hidden descriptions for screen readers -->
             <div class="sr-only">
-                <div id="story-desc">Generate stories and convert them to scripts with images</div>
-                <div id="simple-desc">Convert text to speech with single voice</div>
-                <div id="multi-desc">Create multi-voice audio with different speakers</div>
-                <div id="podcast-desc">Generate podcast content with multiple hosts</div>
+                <div id="story-desc">生成故事并转换为带图像的脚本</div>
+                <div id="simple-desc">使用单一声音将文本转换为语音</div>
+                <div id="multi-desc">使用不同说话者创建多声音音频</div>
+                <div id="podcast-desc">生成多主持人播客内容</div>
             </div>
         </header>
 
@@ -60,18 +60,18 @@
             <section id="storyPage" class="page active" aria-labelledby="story-title">
                 <!-- Story Generation Section -->
                 <div class="story-container">
-                    <h1 id="story-title">✨ Story Generation</h1>
+                    <h1 id="story-title">✨ 故事生成</h1>
                     <div class="form-group">
-                        <label for="themeInput" class="sr-only">Story theme</label>
+                        <label for="themeInput" class="sr-only">故事主题</label>
                         <input
                             type="text"
                             id="themeInput"
                             class="theme-input"
-                            placeholder="Enter your story theme (e.g., 'A magical adventure in space')..."
+                            placeholder="输入您的故事主题（例如：'太空中的神奇冒险'）..."
                             aria-describedby="theme-help"
                             autocomplete="off"
                         >
-                        <div id="theme-help" class="sr-only">Enter a theme or topic for your story</div>
+                        <div id="theme-help" class="sr-only">为您的故事输入主题或话题</div>
                     </div>
 
                     <!-- Language Selection for Story -->
@@ -91,57 +91,57 @@
                     <div class="button-container">
                         <button onclick="generateStory()" id="generateStoryBtn" class="primary-btn" aria-describedby="generate-help">
                             <span class="spinner" id="storySpinner"></span>
-                            <span id="generateStoryText">🎯 Generate Story</span>
+                            <span id="generateStoryText">🎯 生成故事</span>
                         </button>
                     </div>
-                    <div id="generate-help" class="sr-only">Click to generate a story based on your theme</div>
+                    <div id="generate-help" class="sr-only">点击根据您的主题生成故事</div>
 
                     <div class="form-group">
-                        <label for="storyText" class="sr-only">Generated story content</label>
+                        <label for="storyText" class="sr-only">生成的故事内容</label>
                         <textarea
                             id="storyText"
                             class="text-input"
-                            placeholder="Your generated story will appear here..."
+                            placeholder="您生成的故事将在这里显示..."
                             aria-describedby="story-help"
                             readonly
                         ></textarea>
-                        <div id="story-help" class="sr-only">Generated story content will be displayed here</div>
+                        <div id="story-help" class="sr-only">生成的故事内容将在此处显示</div>
                     </div>
                 </div>
 
                 <!-- Script Conversion Section -->
                 <div class="script-container">
-                    <h2 id="script-title">🎬 Script Conversion</h2>
+                    <h2 id="script-title">🎬 脚本转换</h2>
                     <div class="script-buttons">
                         <button onclick="generateScript()" id="convertToScript" class="btn primary" aria-describedby="convert-help">
                             <span class="spinner" id="convertSpinner"></span>
-                            <span id="convertText">📝 Convert to Script</span>
+                            <span id="convertText">📝 转换为脚本</span>
                         </button>
                         <div class="button-row">
                             <button onclick="generateStoryAudio()" id="generateStoryAudioBtn" class="btn secondary hidden" aria-describedby="audio-help">
                                 <span class="spinner" id="audioSpinner"></span>
-                                <span id="storyBtnText">🎵 Generate Audio</span>
+                                <span id="storyBtnText">🎵 生成音频</span>
                             </button>
                             <button onclick="downloadAllImages()" id="downloadImages" class="btn secondary hidden" aria-describedby="download-help">
-                                <span>📥</span> Download All Images
+                                <span>📥</span> 下载所有图片
                             </button>
                         </div>
                     </div>
 
                     <!-- Hidden help text for screen readers -->
                     <div class="sr-only">
-                        <div id="convert-help">Convert your story into a script format with dialogue and narration</div>
-                        <div id="audio-help">Generate audio from the script sections</div>
-                        <div id="download-help">Download all generated images as a zip file</div>
+                        <div id="convert-help">将您的故事转换为包含对话和旁白的脚本格式</div>
+                        <div id="audio-help">从脚本部分生成音频</div>
+                        <div id="download-help">将所有生成的图片下载为zip文件</div>
                     </div>
 
-                    <div id="scriptSections" role="region" aria-label="Script sections">
+                    <div id="scriptSections" role="region" aria-label="脚本部分">
                         <!-- Script sections will be dynamically generated here -->
                     </div>
 
                     <div class="progress-container hidden" id="storyProgressContainer" role="status" aria-live="polite">
                         <div class="progress-text">
-                            Generating: <span id="storyCurrentProgress">0</span>/<span id="storyTotalSections">0</span>
+                            正在生成：<span id="storyCurrentProgress">0</span>/<span id="storyTotalSections">0</span>
                         </div>
                         <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                             <div class="progress" id="storyProgress"></div>
@@ -149,12 +149,12 @@
                     </div>
 
                     <div class="audio-container">
-                        <label for="storyAudioPlayer" class="sr-only">Generated story audio</label>
+                        <label for="storyAudioPlayer" class="sr-only">生成的故事音频</label>
                         <audio id="storyAudioPlayer" controls preload="none" aria-describedby="audio-player-help">
                             <source src="" type="audio/mp3">
-                            Your browser does not support the audio element.
+                            您的浏览器不支持音频元素。
                         </audio>
-                        <div id="audio-player-help" class="sr-only">Audio player for the generated story</div>
+                        <div id="audio-player-help" class="sr-only">生成故事的音频播放器</div>
                     </div>
                 </div>
             </section>
@@ -162,43 +162,43 @@
             <!-- Simple TTS Page -->
             <section id="simplePage" class="page" aria-labelledby="simple-title">
                 <div class="simple-tts-container">
-                    <h1 id="simple-title">🗣️ Simple Text to Speech</h1>
+                    <h1 id="simple-title">🗣️ 简单文本转语音</h1>
 
                     <div class="form-group">
-                        <label for="simpleTtsText" class="sr-only">Text to convert to speech</label>
+                        <label for="simpleTtsText" class="sr-only">要转换为语音的文本</label>
                         <textarea
                             id="simpleTtsText"
                             class="text-input"
-                            placeholder="Enter the text you want to convert to speech..."
+                            placeholder="输入您想要转换为语音的文本..."
                             aria-describedby="simple-text-help"
                             style="min-height: 150px;"
                         ></textarea>
-                        <div id="simple-text-help" class="sr-only">Enter any text to convert it to speech</div>
+                        <div id="simple-text-help" class="sr-only">输入任何文本以将其转换为语音</div>
                     </div>
 
                     <div class="voice-select-container">
-                        <label for="simpleTtsVoice" class="form-label">🎭 Select Voice:</label>
+                        <label for="simpleTtsVoice" class="form-label">🎭 选择声音：</label>
                         <select id="simpleTtsVoice" class="voice-select" aria-describedby="voice-help">
-                            <option value="">Loading voices...</option>
+                            <option value="">正在加载声音...</option>
                         </select>
-                        <div id="voice-help" class="sr-only">Choose a voice for text-to-speech conversion</div>
+                        <div id="voice-help" class="sr-only">为文本转语音转换选择声音</div>
                     </div>
 
                     <div class="button-container">
                         <button onclick="generateSimpleTTS()" id="simpleTtsBtn" class="primary-btn" aria-describedby="simple-generate-help">
                             <span class="spinner" id="simpleTtsSpinner"></span>
-                            <span id="simpleTtsButtonText">🎵 Generate Audio</span>
+                            <span id="simpleTtsButtonText">🎵 生成音频</span>
                         </button>
                     </div>
-                    <div id="simple-generate-help" class="sr-only">Generate audio from the entered text</div>
+                    <div id="simple-generate-help" class="sr-only">从输入的文本生成音频</div>
 
                     <div class="audio-container">
-                        <label for="simpleTtsPlayer" class="sr-only">Generated audio</label>
+                        <label for="simpleTtsPlayer" class="sr-only">生成的音频</label>
                         <audio id="simpleTtsPlayer" controls preload="none" aria-describedby="simple-audio-help">
                             <source src="" type="audio/mp3">
-                            Your browser does not support the audio element.
+                            您的浏览器不支持音频元素。
                         </audio>
-                        <div id="simple-audio-help" class="sr-only">Audio player for the generated speech</div>
+                        <div id="simple-audio-help" class="sr-only">生成语音的音频播放器</div>
                     </div>
                 </div>
             </section>
@@ -206,17 +206,17 @@
             <!-- Multi-Voice TTS Page -->
             <section id="multiPage" class="page" aria-labelledby="multi-title">
                 <div class="multi-tts-container">
-                    <h1 id="multi-title">🎭 Multi-Voice Text to Speech</h1>
+                    <h1 id="multi-title">🎭 多声音文本转语音</h1>
 
                     <div class="tabs-container">
-                        <div class="tabs" role="tablist" aria-label="Text sections">
+                        <div class="tabs" role="tablist" aria-label="文本部分">
                             <button class="tab-btn active" onclick="switchTab(0)" role="tab" aria-selected="true" aria-controls="panel-0" id="tab-0">
-                                📝 Section 1
+                                📝 部分 1
                             </button>
                             <button class="tab-btn" onclick="switchTab(1)" role="tab" aria-selected="false" aria-controls="panel-1" id="tab-1">
-                                📝 Section 2
+                                📝 部分 2
                             </button>
-                            <button class="tab-btn add-tab" onclick="addNewTab()" aria-label="Add new section">
+                            <button class="tab-btn add-tab" onclick="addNewTab()" aria-label="添加新部分">
                                 ➕
                             </button>
                         </div>
@@ -224,41 +224,41 @@
                         <div class="tab-panels">
                             <div class="tab-panel active" role="tabpanel" aria-labelledby="tab-0" id="panel-0">
                                 <div class="form-group">
-                                    <label for="text-0" class="sr-only">Text for section 1</label>
+                                    <label for="text-0" class="sr-only">部分1的文本</label>
                                     <textarea
                                         id="text-0"
                                         class="text-input"
-                                        placeholder="Enter text for this section..."
+                                        placeholder="输入此部分的文本..."
                                         aria-describedby="text-help-0"
                                     ></textarea>
-                                    <div id="text-help-0" class="sr-only">Enter text to be spoken by the selected voice</div>
+                                    <div id="text-help-0" class="sr-only">输入要由所选声音朗读的文本</div>
                                 </div>
                                 <div class="voice-select-container">
-                                    <label for="voice-0" class="form-label">🎭 Voice:</label>
+                                    <label for="voice-0" class="form-label">🎭 声音：</label>
                                     <select id="voice-0" class="voice-select" aria-describedby="voice-help-0">
-                                        <option value="">Loading voices...</option>
+                                        <option value="">正在加载声音...</option>
                                     </select>
-                                    <div id="voice-help-0" class="sr-only">Select voice for this section</div>
+                                    <div id="voice-help-0" class="sr-only">为此部分选择声音</div>
                                 </div>
                             </div>
 
                             <div class="tab-panel" role="tabpanel" aria-labelledby="tab-1" id="panel-1">
                                 <div class="form-group">
-                                    <label for="text-1" class="sr-only">Text for section 2</label>
+                                    <label for="text-1" class="sr-only">部分2的文本</label>
                                     <textarea
                                         id="text-1"
                                         class="text-input"
-                                        placeholder="Enter text for this section..."
+                                        placeholder="输入此部分的文本..."
                                         aria-describedby="text-help-1"
                                     ></textarea>
-                                    <div id="text-help-1" class="sr-only">Enter text to be spoken by the selected voice</div>
+                                    <div id="text-help-1" class="sr-only">输入要由所选声音朗读的文本</div>
                                 </div>
                                 <div class="voice-select-container">
-                                    <label for="voice-1" class="form-label">🎭 Voice:</label>
+                                    <label for="voice-1" class="form-label">🎭 声音：</label>
                                     <select id="voice-1" class="voice-select" aria-describedby="voice-help-1">
-                                        <option value="">Loading voices...</option>
+                                        <option value="">正在加载声音...</option>
                                     </select>
-                                    <div id="voice-help-1" class="sr-only">Select voice for this section</div>
+                                    <div id="voice-help-1" class="sr-only">为此部分选择声音</div>
                                 </div>
                             </div>
                         </div>
@@ -267,36 +267,36 @@
                     <div class="button-container">
                         <button onclick="generateAllAudio()" id="generateBtn" class="primary-btn" aria-describedby="generate-all-help">
                             <span class="spinner" id="spinner"></span>
-                            <span id="btnText">🎵 Generate All Audio</span>
+                            <span id="btnText">🎵 生成所有音频</span>
                         </button>
                         <button onclick="exportMergedAudio()" id="exportBtn" class="action-btn" aria-describedby="export-help">
-                            <span>📥</span> Export Merged Audio
+                            <span>📥</span> 导出合并音频
                         </button>
                     </div>
 
                     <!-- Hidden help text -->
                     <div class="sr-only">
-                        <div id="generate-all-help">Generate audio for all sections and merge them together</div>
-                        <div id="export-help">Download the merged audio file</div>
+                        <div id="generate-all-help">为所有部分生成音频并将它们合并在一起</div>
+                        <div id="export-help">下载合并的音频文件</div>
                     </div>
 
                     <div class="progress-container hidden" id="progressContainer" role="status" aria-live="polite">
-                        <div class="progress-text">Processing sections...</div>
+                        <div class="progress-text">正在处理部分...</div>
                         <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                             <div class="progress" id="progress"></div>
                         </div>
                     </div>
 
                     <div class="audio-container">
-                        <label for="multiAudioPlayer" class="sr-only">Generated merged audio</label>
+                        <label for="multiAudioPlayer" class="sr-only">生成的合并音频</label>
                         <audio id="multiAudioPlayer" controls preload="none" aria-describedby="multi-audio-help">
                             <source src="" type="audio/mp3">
-                            Your browser does not support the audio element.
+                            您的浏览器不支持音频元素。
                         </audio>
-                        <div id="multi-audio-help" class="sr-only">Audio player for the merged multi-voice audio</div>
+                        <div id="multi-audio-help" class="sr-only">合并多声音音频的音频播放器</div>
                     </div>
 
-                    <div class="history-container" id="historyContainer" role="region" aria-label="Generation history">
+                    <div class="history-container" id="historyContainer" role="region" aria-label="生成历史">
                         <!-- History items will be dynamically added here -->
                     </div>
                 </div>
@@ -305,20 +305,20 @@
             <!-- Podcast Generator Page -->
             <section id="podcastPage" class="page" aria-labelledby="podcast-title">
                 <div class="podcast-container">
-                    <h1 id="podcast-title">🎙️ Podcast Generator</h1>
+                    <h1 id="podcast-title">🎙️ 播客生成器</h1>
 
                     <!-- Topic Input Section -->
                     <div class="topic-section">
                         <div class="form-group">
-                            <label for="podcastTopic" class="form-label">📝 Podcast Topic or Content:</label>
+                            <label for="podcastTopic" class="form-label">📝 播客主题或内容：</label>
                             <textarea
                                 id="podcastTopic"
                                 class="topic-input"
-                                placeholder="Enter your podcast topic, outline, or content here. Be as detailed as you want..."
+                                placeholder="在此输入您的播客主题、大纲或内容。可以尽可能详细..."
                                 rows="6"
                                 aria-describedby="topic-help"
                             ></textarea>
-                            <div id="topic-help" class="sr-only">Enter the topic or content for your podcast</div>
+                            <div id="topic-help" class="sr-only">输入您播客的主题或内容</div>
                         </div>
 
                         <!-- Language Selection for Podcast -->
@@ -339,72 +339,72 @@
                         <div class="button-container">
                             <button onclick="generatePodcastContent()" id="generatePodcastBtn" class="primary-btn" aria-describedby="podcast-generate-help">
                                 <span class="spinner" id="podcastSpinner"></span>
-                                <span id="podcastBtnText">🎯 Generate Podcast Content</span>
+                                <span id="podcastBtnText">🎯 生成播客内容</span>
                             </button>
                         </div>
-                        <div id="podcast-generate-help" class="sr-only">Generate podcast content based on your topic</div>
+                        <div id="podcast-generate-help" class="sr-only">根据您的主题生成播客内容</div>
                     </div>
 
                     <!-- Script Editor Section -->
                     <div class="script-editor hidden" id="podcastScriptEditor">
                         <div class="voice-selection">
-                            <h3>🎭 Select Voices for Hosts</h3>
+                            <h3>🎭 为主持人选择声音</h3>
                             <div class="character-voices">
                                 <div class="voice-select-group">
-                                    <label for="hostAVoice">🎤 Host A:</label>
+                                    <label for="hostAVoice">🎤 主持人 A：</label>
                                     <select id="hostAVoice" class="voice-select" aria-describedby="host-a-help">
-                                        <option value="">Loading voices...</option>
+                                        <option value="">正在加载声音...</option>
                                     </select>
-                                    <div id="host-a-help" class="sr-only">Select voice for the first podcast host</div>
+                                    <div id="host-a-help" class="sr-only">为第一位播客主持人选择声音</div>
                                 </div>
                                 <div class="voice-select-group">
-                                    <label for="hostBVoice">🎤 Host B:</label>
+                                    <label for="hostBVoice">🎤 主持人 B：</label>
                                     <select id="hostBVoice" class="voice-select" aria-describedby="host-b-help">
-                                        <option value="">Loading voices...</option>
+                                        <option value="">正在加载声音...</option>
                                     </select>
-                                    <div id="host-b-help" class="sr-only">Select voice for the second podcast host</div>
+                                    <div id="host-b-help" class="sr-only">为第二位播客主持人选择声音</div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="script-controls">
                             <button onclick="generatePodcastScript()" id="generateScriptBtn" class="action-btn" aria-describedby="script-help">
-                                <span>📝</span> Convert to Script
+                                <span>📝</span> 转换为脚本
                             </button>
                             <button onclick="addPodcastDialog('A')" class="action-btn" aria-describedby="add-a-help">
-                                <span>➕</span> Add Host A
+                                <span>➕</span> 添加主持人 A
                             </button>
                             <button onclick="addPodcastDialog('B')" class="action-btn" aria-describedby="add-b-help">
-                                <span>➕</span> Add Host B
+                                <span>➕</span> 添加主持人 B
                             </button>
                             <button onclick="translateAndDownload()" id="translateBtn" class="action-btn" aria-describedby="translate-help">
-                                <span>🌐</span> Translate & Download
+                                <span>🌐</span> 翻译并下载
                             </button>
                         </div>
 
                         <!-- Hidden help text -->
                         <div class="sr-only">
-                            <div id="script-help">Convert content to dialogue script format</div>
-                            <div id="add-a-help">Add a new dialogue section for Host A</div>
-                            <div id="add-b-help">Add a new dialogue section for Host B</div>
-                            <div id="translate-help">Translate content and download script</div>
+                            <div id="script-help">将内容转换为对话脚本格式</div>
+                            <div id="add-a-help">为主持人A添加新的对话部分</div>
+                            <div id="add-b-help">为主持人B添加新的对话部分</div>
+                            <div id="translate-help">翻译内容并下载脚本</div>
                         </div>
 
-                        <div id="podcastSections" class="podcast-sections" role="region" aria-label="Podcast dialogue sections">
+                        <div id="podcastSections" class="podcast-sections" role="region" aria-label="播客对话部分">
                             <!-- Dialogue sections will be dynamically generated here -->
                         </div>
 
                         <div class="button-container">
                             <button onclick="generatePodcastAudio()" id="generatePodcastAudioBtn" class="primary-btn" aria-describedby="podcast-audio-help">
                                 <span class="spinner" id="podcastAudioSpinner"></span>
-                                <span id="podcastAudioBtnText">🎵 Generate Podcast Audio</span>
+                                <span id="podcastAudioBtnText">🎵 生成播客音频</span>
                             </button>
                         </div>
-                        <div id="podcast-audio-help" class="sr-only">Generate audio for the entire podcast</div>
+                        <div id="podcast-audio-help" class="sr-only">为整个播客生成音频</div>
 
                         <div class="progress-container hidden" id="podcastProgressContainer" role="status" aria-live="polite">
                             <div class="progress-text">
-                                Generating: <span id="podcastCurrentProgress">0</span>/<span id="podcastTotalSections">0</span>
+                                正在生成：<span id="podcastCurrentProgress">0</span>/<span id="podcastTotalSections">0</span>
                             </div>
                             <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                                 <div class="progress" id="podcastProgress"></div>
@@ -412,12 +412,12 @@
                         </div>
 
                         <div class="audio-container">
-                            <label for="podcastAudioPlayer" class="sr-only">Generated podcast audio</label>
+                            <label for="podcastAudioPlayer" class="sr-only">生成的播客音频</label>
                             <audio id="podcastAudioPlayer" controls preload="none" aria-describedby="podcast-player-help">
                                 <source src="" type="audio/mp3">
-                                Your browser does not support the audio element.
+                                您的浏览器不支持音频元素。
                             </audio>
-                            <div id="podcast-player-help" class="sr-only">Audio player for the generated podcast</div>
+                            <div id="podcast-player-help" class="sr-only">生成播客的音频播放器</div>
                         </div>
                     </div>
                 </div>
@@ -693,7 +693,7 @@
             // 添加新标签按钮
             const tabBtn = document.createElement('button');
             tabBtn.className = 'tab-btn';
-            tabBtn.textContent = `Section ${newIndex + 1}`;
+            tabBtn.textContent = `部分 ${newIndex + 1}`;
             tabBtn.onclick = () => switchTab(newIndex);
             tabs.insertBefore(tabBtn, tabs.lastElementChild);
             
@@ -701,7 +701,7 @@
             const panel = document.createElement('div');
             panel.className = 'tab-panel';
             panel.innerHTML = `
-                <textarea class="text-input" placeholder="Enter text to convert to speech..."></textarea>
+                <textarea class="text-input" placeholder="输入要转换为语音的文本..."></textarea>
                 <div class="voice-select-container">
                     <select class="voice-select">
                         ${document.querySelector('.voice-select').innerHTML}
@@ -732,13 +732,13 @@
             })).filter(s => s.text && s.voice);
 
             if (sectionsData.length === 0) {
-                alert('Please enter text to convert');
+                alert('请输入要转换的文本');
                 return;
             }
 
             generateBtn.disabled = true;
             spinner.style.display = 'inline-block';
-            btnText.textContent = 'Generating...';
+            btnText.textContent = '正在生成...';
             progressContainer.style.display = 'block';
             progress.style.width = '0%';
 
@@ -776,7 +776,7 @@
                                 document.getElementById('exportBtn').disabled = false;
                                 
                                 // 添加到历史记录
-                                addToHistory(data.filename, `Combined Audio (${sectionsData.length} sections)`, 'Multiple');
+                                addToHistory(data.filename, `合并音频 (${sectionsData.length} 个部分)`, '多个');
                             }
                         } catch (e) {
                             console.warn('Failed to parse line:', line, e);
@@ -784,18 +784,18 @@
                     }
                 }
             } catch (error) {
-                alert('Generation failed: ' + error.message);
+                alert('生成失败：' + error.message);
             } finally {
                 generateBtn.disabled = false;
                 spinner.style.display = 'none';
-                btnText.textContent = 'Generate All Audio';
+                btnText.textContent = '生成所有音频';
             }
         }
 
         async function exportMergedAudio() {
             const audioPlayer = document.getElementById('multiAudioPlayer');
             if (!audioPlayer.src) {
-                alert('Please generate audio first');
+                alert('请先生成音频');
                 return;
             }
 
@@ -808,14 +808,14 @@
                 link.click();
                 document.body.removeChild(link);
             } catch (error) {
-                alert('Export failed: ' + error.message);
+                alert('导出失败：' + error.message);
             }
         }
 
         async function generateStory() {
             const theme = document.getElementById('themeInput').value.trim();
             if (!theme) {
-                showNotification('Please enter a story theme', 'warning');
+                showNotification('请输入故事主题', 'warning');
                 document.getElementById('themeInput').focus();
                 return;
             }
@@ -831,7 +831,7 @@
             // Update UI state
             generateStoryBtn.disabled = true;
             spinner.style.display = 'inline-block';
-            btnText.textContent = 'Generating Story...';
+            btnText.textContent = '正在生成故事...';
             storyText.value = '';
 
             try {
@@ -849,37 +849,37 @@
                     // 保存故事语言信息到数据属性
                     storyText.setAttribute('data-language', data.language || selectedLanguage);
 
-                    showNotification('Story generated successfully!', 'success');
+                    showNotification('故事生成成功！', 'success');
 
                     // Scroll to story text for better UX
                     storyText.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 } else {
-                    throw new Error(data.error || 'Failed to generate story');
+                    throw new Error(data.error || '生成故事失败');
                 }
             } catch (error) {
                 console.error('Story generation error:', error);
-                showNotification('Failed to generate story: ' + error.message, 'error');
+                showNotification('生成故事失败：' + error.message, 'error');
             } finally {
                 generateStoryBtn.disabled = false;
                 spinner.style.display = 'none';
-                btnText.textContent = '🎯 Generate Story';
+                btnText.textContent = '🎯 生成故事';
             }
         }
 
         async function generateScript() {
             const storyText = document.getElementById('storyText').value;
             if (!storyText) {
-                alert('Please generate a story first');
+                alert('请先生成一个故事');
                 return;
             }
 
             const convertToScript = document.getElementById('convertToScript');
-            
+
             // 设置按钮为生成中状态
             convertToScript.disabled = true;
             convertToScript.style.backgroundColor = '#ccc';  // 灰色背景
-            convertToScript.textContent = 'Generating...';
-            
+            convertToScript.textContent = '正在生成...';
+
             const scriptSections = document.getElementById('scriptSections');
             scriptSections.innerHTML = ''; // 清空现有内容
             
@@ -929,16 +929,16 @@
                                     scriptControls.style.gap = '10px';
                                     scriptControls.innerHTML = `
                                         <button onclick="addScriptSection('narration')" class="btn secondary">
-                                            Add Narration
+                                            添加旁白
                                         </button>
                                         <button onclick="addScriptSection('dialogue')" class="btn secondary">
-                                            Add Dialogue
+                                            添加对话
                                         </button>
                                         <button onclick="downloadScript('json')" class="btn secondary">
-                                            Download JSON
+                                            下载 JSON
                                         </button>
                                         <button onclick="downloadScript('txt')" class="btn secondary">
-                                            Download TXT
+                                            下载 TXT
                                         </button>
                                     `;
                                     scriptSections.appendChild(scriptControls);
@@ -953,12 +953,12 @@
                     }
                 }
             } catch (error) {
-                alert('Failed to convert script: ' + error.message);
+                alert('转换脚本失败：' + error.message);
             } finally {
                 // 恢复按钮状态
                 convertToScript.disabled = false;
                 convertToScript.style.backgroundColor = '#4a90e2';  // 恢复原来的蓝色
-                convertToScript.textContent = 'Convert to Script';
+                convertToScript.textContent = '转换为脚本';
             }
         }
 
@@ -971,10 +971,10 @@
             buttonContainer.style.gap = '10px';
             buttonContainer.innerHTML = `
                 <button onclick="generateStoryAudio()" class="primary-btn">
-                    Generate Audio
+                    生成音频
                 </button>
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <label for="imageModelSelect" style="font-weight: bold; color: #333;">AI Model:</label>
+                    <label for="imageModelSelect" style="font-weight: bold; color: #333;">AI 模型：</label>
                     <select id="imageModelSelect" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: white;">
                         <option value="black-forest-labs/flux-schnell" selected>FLUX Schnell</option>
                         <option value="black-forest-labs/flux-dev">FLUX Dev</option>
@@ -984,10 +984,10 @@
                     </select>
                 </div>
                 <button onclick="generateAllImages()" id="generateAllImagesBtn" class="primary-btn">
-                    Generate All Images
+                    生成所有图片
                 </button>
                 <button onclick="downloadAllImages()" class="primary-btn">
-                    Download All Images
+                    下载所有图片
                 </button>
             `;
             return buttonContainer;
@@ -1011,7 +1011,7 @@
             // 添加类型标签
             const typeLabel = document.createElement('span');
             typeLabel.className = `section-type ${scene.type}`;
-            typeLabel.textContent = scene.type === 'narration' ? 'Narration' : 'Dialogue';
+            typeLabel.textContent = scene.type === 'narration' ? '旁白' : '对话';
             header.appendChild(typeLabel);
 
             // 添加控制按钮
@@ -1056,7 +1056,7 @@
             const textarea = document.createElement('textarea');
             textarea.className = 'text-input';
             textarea.value = scene.text;
-            textarea.placeholder = scene.type === 'dialogue' ? 'Enter dialogue...' : 'Enter narration...';
+            textarea.placeholder = scene.type === 'dialogue' ? '输入对话...' : '输入旁白...';
             content.appendChild(textarea);
 
             section.appendChild(header);
@@ -1068,9 +1068,9 @@
             const uniqueId = `section-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
             imageContainer.innerHTML = `
                 <div class="image-controls">
-                    <button class="generate-image-btn">Generate Image</button>
+                    <button class="generate-image-btn">生成图片</button>
                     <div class="model-select-container">
-                        <label for="sectionModel-${uniqueId}" class="model-label">Model:</label>
+                        <label for="sectionModel-${uniqueId}" class="model-label">模型：</label>
                         <select id="sectionModel-${uniqueId}" class="section-model-select">
                             <option value="black-forest-labs/flux-schnell" selected>FLUX Schnell</option>
                             <option value="black-forest-labs/flux-dev">FLUX Dev</option>
@@ -1082,13 +1082,13 @@
                 </div>
                 <div class="image-loading" style="display: none;">
                     <span class="spinner"></span>
-                    <span>Generating image...</span>
+                    <span>正在生成图片...</span>
                 </div>
                 <div class="image-prompt" style="display: none;"></div>
                 <div class="image-preview">
                     <img style="max-width: 100%; display: none;" />
                     <div class="regenerate-controls" style="display: none;">
-                        <button class="regenerate-btn">Regenerate</button>
+                        <button class="regenerate-btn">重新生成</button>
                         <select class="regenerate-model-select">
                             <option value="black-forest-labs/flux-schnell">FLUX Schnell</option>
                             <option value="black-forest-labs/flux-dev">FLUX Dev</option>
@@ -1110,7 +1110,7 @@
 
         async function generateSectionImage(section, text, isRegenerate = false) {
             if (!text) {
-                alert('No text available for image generation');
+                alert('没有可用于图像生成的文本');
                 return;
             }
 
@@ -1249,7 +1249,7 @@
             } catch (error) {
                 console.error('Image generation error:', error);
                 loading.style.display = 'none';
-                alert('Failed to generate image: ' + error.message);
+                alert('生成图像失败：' + error.message);
             } finally {
                 generateBtn.disabled = false;
             }
@@ -1324,11 +1324,11 @@
                 }
             } catch (error) {
                 console.error('Audio generation error:', error);
-                alert('Failed to generate audio: ' + error.message);
+                alert('生成音频失败：' + error.message);
             } finally {
                 generateBtn.disabled = false;
                 spinner.style.display = 'none';
-                btnText.textContent = 'Generate Audio';
+                btnText.textContent = '生成音频';
             }
         }
 
@@ -1408,10 +1408,10 @@
 
             // Update page title
             const pageTitles = {
-                'story': 'Story Generator',
-                'simple': 'Simple TTS',
-                'multi': 'Multi-Voice TTS',
-                'podcast': 'Podcast Generator'
+                'story': '故事生成器',
+                'simple': '简单语音合成',
+                'multi': '多声音语音合成',
+                'podcast': '播客生成器'
             };
             document.title = `${pageTitles[pageId]} - AI ContentCraft`;
         }
@@ -1422,13 +1422,13 @@
             const voice = document.getElementById('simpleTtsVoice').value;
 
             if (!text) {
-                showNotification('Please enter some text to convert', 'warning');
+                showNotification('请输入要转换的文本', 'warning');
                 document.getElementById('simpleTtsText').focus();
                 return;
             }
 
             if (!voice) {
-                showNotification('Please select a voice', 'warning');
+                showNotification('请选择一个声音', 'warning');
                 document.getElementById('simpleTtsVoice').focus();
                 return;
             }
@@ -1438,10 +1438,10 @@
             const buttonText = document.getElementById('simpleTtsButtonText');
 
             // Update UI state
-            setLoadingState(button, true, '🎵 Generating Audio...');
+            setLoadingState(button, true, '🎵 正在生成音频...');
 
             try {
-                announceToScreenReader('Generating audio, please wait');
+                announceToScreenReader('正在生成音频，请稍候');
 
                 // 检测文本语言
                 const detectedLanguage = detectLanguage(text);
@@ -1476,8 +1476,8 @@
                                 audioPlayer.src = data.filename;
                                 audioPlayer.load();
 
-                                showNotification('Audio generated successfully!', 'success');
-                                announceToScreenReader('Audio generation completed');
+                                showNotification('音频生成成功！', 'success');
+                                announceToScreenReader('音频生成完成');
 
                                 // Scroll to audio player
                                 audioPlayer.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1489,17 +1489,17 @@
                 }
             } catch (error) {
                 console.error('TTS generation error:', error);
-                showNotification('Failed to generate audio: ' + error.message, 'error');
-                announceToScreenReader('Audio generation failed');
+                showNotification('生成音频失败：' + error.message, 'error');
+                announceToScreenReader('音频生成失败');
             } finally {
-                setLoadingState(button, false, '', '🎵 Generate Audio');
+                setLoadingState(button, false, '', '🎵 生成音频');
             }
         }
 
         async function generateMultiAudio() {
             const sections = document.querySelectorAll('.script-section');
             if (sections.length === 0) {
-                alert('No sections to generate audio from');
+                alert('没有可生成音频的部分');
                 return;
             }
 
@@ -1556,12 +1556,12 @@
                     throw new Error(data.error);
                 }
             } catch (error) {
-                alert('Audio generation failed: ' + error.message);
+                alert('音频生成失败：' + error.message);
             } finally {
                 // 恢复按钮状态
                 generateBtn.disabled = false;
                 spinner.style.display = 'none';
-                buttonText.textContent = 'Generate Audio';
+                buttonText.textContent = '生成音频';
                 
                 // 延迟隐藏进度条
                 setTimeout(() => {
@@ -1575,7 +1575,7 @@
         async function generatePodcastContent() {
             const topic = document.getElementById('podcastTopic').value.trim();
             if (!topic) {
-                alert('Please enter a topic');
+                alert('请输入一个主题');
                 return;
             }
 
@@ -1588,7 +1588,7 @@
 
             button.disabled = true;
             spinner.style.display = 'inline-block';
-            btnText.textContent = 'Generating...';
+            btnText.textContent = '正在生成...';
 
             try {
                 const response = await fetch('/generate-podcast', {
@@ -1610,18 +1610,18 @@
                     throw new Error(data.error);
                 }
             } catch (error) {
-                alert('Failed to generate podcast content: ' + error.message);
+                alert('生成播客内容失败：' + error.message);
             } finally {
                 button.disabled = false;
                 spinner.style.display = 'none';
-                btnText.textContent = 'Generate Podcast';
+                btnText.textContent = '生成播客内容';
             }
         }
 
         async function generatePodcastScript() {
             const content = document.getElementById('podcastTopic').value.trim();
             if (!content) {
-                alert('Please generate or enter podcast content first');
+                alert('请先生成或输入播客内容');
                 return;
             }
 
@@ -1649,10 +1649,10 @@
                     throw new Error(data.error);
                 }
             } catch (error) {
-                alert('Failed to convert to script: ' + error.message);
+                alert('转换为脚本失败：' + error.message);
             } finally {
                 button.disabled = false;
-                button.textContent = 'Convert to Script';
+                button.textContent = '转换为脚本';
             }
         }
 
@@ -1670,7 +1670,7 @@
 
             const hostLabel = document.createElement('div');
             hostLabel.className = `host-label host-${host.toLowerCase()}`;
-            hostLabel.textContent = `Host ${host}`;
+            hostLabel.textContent = `主持人 ${host}`;
             section.appendChild(hostLabel);
 
             const textarea = document.createElement('textarea');
@@ -1680,7 +1680,7 @@
 
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'delete-btn';
-            deleteBtn.textContent = 'Delete';
+            deleteBtn.textContent = '删除';
             deleteBtn.onclick = () => section.remove();
             section.appendChild(deleteBtn);
 
@@ -1698,7 +1698,7 @@
             const topic = document.getElementById('podcastTopic').value.trim();
             
             if (sections.length === 0) {
-                alert('No dialog sections found');
+                alert('未找到对话部分');
                 return;
             }
 
@@ -1777,11 +1777,11 @@
                     }
                 }
             } catch (error) {
-                alert('Failed to generate audio: ' + error.message);
+                alert('生成音频失败：' + error.message);
             } finally {
                 button.disabled = false;
                 spinner.style.display = 'none';
-                btnText.textContent = 'Generate Audio';
+                btnText.textContent = '生成音频';
                 
                 setTimeout(() => {
                     progressContainer.style.display = 'none';
@@ -1793,7 +1793,7 @@
         async function generateStoryImage() {
             const storyText = document.getElementById('storyText').value;
             if (!storyText) {
-                alert('Please generate a story first');
+                alert('请先生成一个故事');
                 return;
             }
 
@@ -1867,11 +1867,11 @@
                 
             } catch (error) {
                 console.error('Image generation error:', error);
-                alert('Failed to generate image: ' + error.message);
+                alert('生成图像失败：' + error.message);
                 imgContainer.style.display = 'none';
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Generate Image';
+                btn.textContent = '生成图片';
             }
         }
 
@@ -1895,7 +1895,7 @@
             console.log('Images to download:', images); // 添加日志
             
             if (images.length === 0) {
-                alert('No images to download');
+                alert('没有可下载的图片');
                 return;
             }
             
@@ -1910,13 +1910,13 @@
                 
                 const data = await response.json();
                 if (data.success) {
-                    alert(`Successfully downloaded ${data.totalImages} images to:\n${data.directory}\n\nA gallery.html file has been created for preview.`);
+                    alert(`成功下载了 ${data.totalImages} 张图片到：\n${data.directory}\n\n已创建 gallery.html 文件用于预览。`);
                 } else {
                     throw new Error(data.error);
                 }
             } catch (error) {
                 console.error('Download error:', error);
-                alert('Failed to download images: ' + error.message);
+                alert('下载图片失败：' + error.message);
             }
         }
 
@@ -1928,7 +1928,7 @@
             }));
 
             if (sections.length === 0) {
-                alert('No script sections found');
+                alert('未找到脚本部分');
                 return;
             }
 
@@ -1978,11 +1978,11 @@
                                 progressText.textContent = data.message;
                                 break;
                             case 'prompt_progress':
-                                progressText.textContent = `${data.message} - Generating prompts...`;
+                                progressText.textContent = `${data.message} - 正在生成提示词...`;
                                 progressBar.style.width = `${(data.current / data.total) * 50}%`; // 提示词生成占总进度的50%
                                 break;
                             case 'image_progress':
-                                progressText.textContent = `${data.message} - Generating images...`;
+                                progressText.textContent = `${data.message} - 正在生成图片...`;
                                 progressBar.style.width = `${50 + (data.current / data.total) * 50}%`; // 图片生成占后50%
                                 break;
                             case 'section_complete':
@@ -2021,7 +2021,7 @@
                                     newImg.onerror = () => {
                                         console.error('Failed to load image:', data.imageUrl);
                                         loading.style.display = 'none';
-                                        alert(`Failed to load image for section ${data.sectionId}`);
+                                        alert(`加载第 ${data.sectionId} 部分的图片失败`);
                                     };
 
                                     // 设置新图片的属性
@@ -2037,7 +2037,7 @@
                                 }
                                 break;
                             case 'complete':
-                                progressText.textContent = 'All images generated successfully!';
+                                progressText.textContent = '所有图片生成成功！';
                                 progressBar.style.width = '100%';
                                 setTimeout(() => {
                                     progressContainer.remove();
@@ -2049,11 +2049,11 @@
                     }
                 }
             } catch (error) {
-                alert('Failed to generate images: ' + error.message);
+                alert('生成图片失败：' + error.message);
                 progressContainer.remove();
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Generate All Images';
+                btn.textContent = '生成所有图片';
             }
         }
 
@@ -2063,7 +2063,7 @@
             const scene = {
                 type: type,
                 text: '',
-                character: type === 'dialogue' ? 'Character Name' : undefined
+                character: type === 'dialogue' ? '角色名称' : undefined
             };
             
             // 在控制按钮之前插入新段落
@@ -2124,7 +2124,7 @@
                     }
 
                     // 合并英文和中文内容
-                    const downloadContent = englishContent + '\n\n=== Chinese Translation ===\n\n' + data.translation;
+                    const downloadContent = englishContent + '\n\n=== 中文翻译 ===\n\n' + data.translation;
 
                     // 下载双语文件
                     const blob = new Blob([downloadContent], { type: 'text/plain' });
@@ -2132,7 +2132,7 @@
                     downloadFile(blob, `story-script-bilingual-${timestamp}.txt`);
 
                 } catch (error) {
-                    alert('Translation failed: ' + error.message);
+                    alert('翻译失败：' + error.message);
                     
                     // 如果翻译失败，仍然下载英文版本
                     const blob = new Blob([englishContent], { type: 'text/plain' });
@@ -2158,13 +2158,13 @@
         async function translateAndDownload() {
             const podcastSections = document.getElementById('podcastSections');
             if (!podcastSections || podcastSections.children.length === 0) {
-                alert('Please generate podcast script first');
+                alert('请先生成播客脚本');
                 return;
             }
 
             const translateBtn = document.getElementById('translateBtn');
             translateBtn.disabled = true;
-            translateBtn.textContent = 'Translating...';
+            translateBtn.textContent = '正在翻译...';
 
             try {
                 // 收集所有对话内容
@@ -2187,7 +2187,7 @@
                 }
 
                 // 准备下载内容：原文和译文并排显示
-                const downloadContent = dialogues + '\n\n=== Chinese Translation ===\n\n' + data.translation;
+                const downloadContent = dialogues + '\n\n=== 中文翻译 ===\n\n' + data.translation;
 
                 // 下载文件
                 const blob = new Blob([downloadContent], { type: 'text/plain' });
@@ -2195,10 +2195,10 @@
                 downloadFile(blob, `podcast-script-bilingual-${timestamp}.txt`);
 
             } catch (error) {
-                alert('Translation failed: ' + error.message);
+                alert('翻译失败：' + error.message);
             } finally {
                 translateBtn.disabled = false;
-                translateBtn.textContent = 'Translate & Download';
+                translateBtn.textContent = '翻译并下载';
             }
         }
     </script>

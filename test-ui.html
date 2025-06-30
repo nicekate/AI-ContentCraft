@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UI Test - AI ContentCraft</title>
+    <title>UI 测试 - AI ContentCraft</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="modern-styles.css">
 </head>
@@ -12,16 +12,16 @@
         <header role="banner">
             <nav class="nav-bar" role="navigation">
                 <button class="nav-button active">
-                    <span>📖</span> Story Generator
+                    <span>📖</span> 故事生成器
                 </button>
                 <button class="nav-button">
-                    <span>🗣️</span> Simple TTS
+                    <span>🗣️</span> 简单语音合成
                 </button>
                 <button class="nav-button">
-                    <span>🎭</span> Multi-Voice TTS
+                    <span>🎭</span> 多声音语音合成
                 </button>
                 <button class="nav-button">
-                    <span>🎙️</span> Podcast Generator
+                    <span>🎙️</span> 播客生成器
                 </button>
             </nav>
         </header>
@@ -29,46 +29,46 @@
         <main>
             <section class="page active">
                 <div class="story-container">
-                    <h1>✨ UI Test Page</h1>
-                    
+                    <h1>✨ UI 测试页面</h1>
+
                     <div class="form-group">
-                        <label for="testInput" class="form-label">📝 Test Input:</label>
-                        <input 
-                            type="text" 
-                            id="testInput" 
-                            class="theme-input" 
-                            placeholder="Enter test text here..."
+                        <label for="testInput" class="form-label">📝 测试输入：</label>
+                        <input
+                            type="text"
+                            id="testInput"
+                            class="theme-input"
+                            placeholder="在此输入测试文本..."
                         >
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="testTextarea" class="form-label">📄 Test Textarea:</label>
-                        <textarea 
-                            id="testTextarea" 
-                            class="text-input" 
-                            placeholder="Enter longer text here..."
+                        <label for="testTextarea" class="form-label">📄 测试文本区域：</label>
+                        <textarea
+                            id="testTextarea"
+                            class="text-input"
+                            placeholder="在此输入较长的文本..."
                         ></textarea>
                     </div>
-                    
+
                     <div class="voice-select-container">
-                        <label for="testSelect" class="form-label">🎭 Test Select:</label>
+                        <label for="testSelect" class="form-label">🎭 测试选择：</label>
                         <select id="testSelect" class="voice-select">
-                            <option value="">Choose an option...</option>
-                            <option value="option1">Option 1</option>
-                            <option value="option2">Option 2</option>
-                            <option value="option3">Option 3</option>
+                            <option value="">选择一个选项...</option>
+                            <option value="option1">选项 1</option>
+                            <option value="option2">选项 2</option>
+                            <option value="option3">选项 3</option>
                         </select>
                     </div>
                     
                     <div class="button-container">
                         <button class="primary-btn" onclick="testNotification('success')">
-                            <span>✅</span> Success Button
+                            <span>✅</span> 成功按钮
                         </button>
                         <button class="action-btn" onclick="testNotification('warning')">
-                            <span>⚠️</span> Warning Button
+                            <span>⚠️</span> 警告按钮
                         </button>
                         <button class="delete-btn" onclick="testNotification('error')">
-                            <span>❌</span> Error Button
+                            <span>❌</span> 错误按钮
                         </button>
                     </div>
                     
@@ -146,12 +146,12 @@
         
         function testNotification(type) {
             const messages = {
-                'success': 'This is a success notification!',
-                'warning': 'This is a warning notification!',
-                'error': 'This is an error notification!',
-                'info': 'This is an info notification!'
+                'success': '这是一个成功通知！',
+                'warning': '这是一个警告通知！',
+                'error': '这是一个错误通知！',
+                'info': '这是一个信息通知！'
             };
-            
+
             showNotification(messages[type] || messages.info, type);
         }
         

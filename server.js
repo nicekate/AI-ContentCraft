@@ -271,7 +271,7 @@ app.post('/generate-script', async (req, res) => {
     // 发送开始消息
     res.write(JSON.stringify({
         type: 'status',
-        message: 'Converting story to script...'
+        message: '正在将故事转换为脚本...'
     }) + '\n');
 
     try {
