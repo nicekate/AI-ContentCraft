@@ -72,6 +72,7 @@ app.get('/voices', async (req, res) => {
     console.log('GET /voices request received');
     // MiniMax Speech-02-Turbo 支持的语音列表
     const voices = [
+        // 英文语音
         { id: "Wise_Woman", name: "Wise Woman", language: "en-us", gender: "Female" },
         { id: "Friendly_Person", name: "Friendly Person", language: "en-us", gender: "Neutral" },
         { id: "Inspirational_girl", name: "Inspirational Girl", language: "en-us", gender: "Female" },
@@ -87,7 +88,15 @@ app.get('/voices', async (req, res) => {
         { id: "Imposing_Manner", name: "Imposing Manner", language: "en-us", gender: "Neutral" },
         { id: "Elegant_Man", name: "Elegant Man", language: "en-us", gender: "Male" },
         { id: "Sweet_Girl_2", name: "Sweet Girl", language: "en-us", gender: "Female" },
-        { id: "Exuberant_Girl", name: "Exuberant Girl", language: "en-us", gender: "Female" }
+        { id: "Exuberant_Girl", name: "Exuberant Girl", language: "en-us", gender: "Female" },
+
+        // 中文语音
+        { id: "CN_Female_1", name: "温柔女声", language: "zh-cn", gender: "Female" },
+        { id: "CN_Male_1", name: "沉稳男声", language: "zh-cn", gender: "Male" },
+        { id: "CN_Female_2", name: "活泼女声", language: "zh-cn", gender: "Female" },
+        { id: "CN_Male_2", name: "磁性男声", language: "zh-cn", gender: "Male" },
+        { id: "CN_Female_3", name: "知性女声", language: "zh-cn", gender: "Female" },
+        { id: "CN_Male_3", name: "亲和男声", language: "zh-cn", gender: "Male" }
     ];
     res.json(voices);
 });
@@ -216,30 +225,42 @@ app.post('/generate-and-merge', async (req, res) => {
 
 // 修改生成故事的路由
 app.post('/generate-story', async (req, res) => {
-    const { theme } = req.body;
+    const { theme, language = 'english' } = req.body;
     try {
+        // 根据语言选择设置系统提示和用户提示
+        let systemContent, userContent;
+
+        if (language === 'chinese') {
+            systemContent = '你是一位专业的故事作家。创作引人入胜且有趣的短篇故事，具有良好的情节发展。请用中文回复。';
+            userContent = `请写一个关于"${theme}"的短篇故事，大约200字左右`;
+        } else {
+            systemContent = 'You are a professional story writer. Create engaging and interesting short stories with good plot development.';
+            userContent = `Write a short story about "${theme}" in around 200 words`;
+        }
+
         const response = await openai.chat.completions.create({
             model: 'deepseek-chat',
             messages: [
-                { 
-                    role: 'system', 
-                    content: 'You are a professional story writer. Create engaging and interesting short stories with good plot development.' 
+                {
+                    role: 'system',
+                    content: systemContent
                 },
-                { 
-                    role: 'user', 
-                    content: `Write a short story about "${theme}" in around 200 words` 
+                {
+                    role: 'user',
+                    content: userContent
                 }
             ],
         });
-        
-        res.json({ 
+
+        res.json({
             success: true,
-            story: response.choices[0].message.content 
+            story: response.choices[0].message.content,
+            language: language
         });
     } catch (error) {
-        res.status(500).json({ 
-            success: false, 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            error: error.message
         });
     }
 });
@@ -346,26 +367,39 @@ app.post('/generate-script', async (req, res) => {
 
 // 添加播客生成路由
 app.post('/generate-podcast', async (req, res) => {
-    const { topic } = req.body;
+    const { topic, language = 'english' } = req.body;
 
     if (DEBUG_MODE) {
         console.log('=== PODCAST GENERATION DEBUG ===');
         console.log('Topic:', topic);
+        console.log('Language:', language);
         console.log('DeepSeek API Key:', process.env.DEEPSEEK_API_KEY ? 'Present' : 'Missing');
     }
 
     try {
         if (DEBUG_MODE) console.log('Making request to DeepSeek API...');
+
+        // 根据语言选择设置系统提示和用户提示
+        let systemContent, userContent;
+
+        if (language === 'chinese') {
+            systemContent = '你是一位专业的播客内容创作者。创作引人入胜且信息丰富的播客内容，适合两位主持人之间的对话。请用中文回复。';
+            userContent = `请创建一个关于"${topic}"的播客讨论大纲。内容应该信息丰富且对话性强。`;
+        } else {
+            systemContent = 'You are a professional podcast content creator. Create engaging and informative podcast content that is suitable for a conversation between two hosts.';
+            userContent = `Create a podcast discussion outline about "${topic}". The content should be informative and conversational.`;
+        }
+
         const response = await openai.chat.completions.create({
             model: 'deepseek-chat',
             messages: [
                 {
                     role: 'system',
-                    content: 'You are a professional podcast content creator. Create engaging and informative podcast content that is suitable for a conversation between two hosts.'
+                    content: systemContent
                 },
                 {
                     role: 'user',
-                    content: `Create a podcast discussion outline about "${topic}". The content should be informative and conversational.`
+                    content: userContent
                 }
             ],
         });
@@ -373,7 +407,8 @@ app.post('/generate-podcast', async (req, res) => {
         if (DEBUG_MODE) console.log('DeepSeek API response received successfully');
         res.json({
             success: true,
-            content: response.choices[0].message.content
+            content: response.choices[0].message.content,
+            language: language
         });
     } catch (error) {
         console.error('=== PODCAST GENERATION ERROR ===');
@@ -472,8 +507,8 @@ app.post('/generate-image-prompt', async (req, res) => {
         const response = await openai.chat.completions.create({
             model: 'deepseek-chat',
             messages: [
-                { 
-                    role: 'system', 
+                {
+                    role: 'system',
                     content: `You are a professional image prompt engineer. Create concise but detailed image prompts that maintain consistency.
 
 Requirements:
@@ -482,14 +517,15 @@ Requirements:
 3. Include artistic style and mood
 4. Avoid NSFW content
 5. Use natural, descriptive language
-6. Output in English only
+6. ALWAYS output in English only, regardless of input language
+7. If input text is in Chinese or other languages, translate the key visual elements to English first
 
 Story context:
-${context || 'No context provided'}` 
+${context || 'No context provided'}`
                 },
-                { 
-                    role: 'user', 
-                    content: `Create an image generation prompt for this scene while maintaining consistency with any provided context: "${text}"` 
+                {
+                    role: 'user',
+                    content: `Create an English image generation prompt for this scene while maintaining consistency with any provided context. If the input text is not in English, translate the visual elements first: "${text}"`
                 }
             ],
         });

@@ -73,6 +73,21 @@
                         >
                         <div id="theme-help" class="sr-only">Enter a theme or topic for your story</div>
                     </div>
+
+                    <!-- Language Selection for Story -->
+                    <div class="form-group">
+                        <label class="language-label">选择故事语言 / Choose Story Language:</label>
+                        <div class="language-options">
+                            <label class="radio-option">
+                                <input type="radio" name="storyLanguage" value="chinese" checked>
+                                <span class="radio-text">🇨🇳 中文</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="storyLanguage" value="english">
+                                <span class="radio-text">🇺🇸 English</span>
+                            </label>
+                        </div>
+                    </div>
                     <div class="button-container">
                         <button onclick="generateStory()" id="generateStoryBtn" class="primary-btn" aria-describedby="generate-help">
                             <span class="spinner" id="storySpinner"></span>
@@ -304,6 +319,21 @@
                                 aria-describedby="topic-help"
                             ></textarea>
                             <div id="topic-help" class="sr-only">Enter the topic or content for your podcast</div>
+                        </div>
+
+                        <!-- Language Selection for Podcast -->
+                        <div class="form-group">
+                            <label class="language-label">选择播客语言 / Choose Podcast Language:</label>
+                            <div class="language-options">
+                                <label class="radio-option">
+                                    <input type="radio" name="podcastLanguage" value="chinese" checked>
+                                    <span class="radio-text">🇨🇳 中文</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="podcastLanguage" value="english">
+                                    <span class="radio-text">🇺🇸 English</span>
+                                </label>
+                            </div>
                         </div>
 
                         <div class="button-container">
@@ -554,14 +584,43 @@
 
         function updateAllVoiceSelects() {
             const voiceSelects = document.querySelectorAll('.voice-select');
-            const voiceOptionsHtml = voices.map(voice => 
+            const voiceOptionsHtml = voices.map(voice =>
                 `<option value="${voice.id}">${voice.name} (${voice.language}, ${voice.gender})</option>`
             ).join('');
-            
+
             voiceSelects.forEach(select => {
                 select.innerHTML = voiceOptionsHtml;
-                select.value = 'Wise_Woman';
+
+                // 为播客主持人设置默认语音
+                if (select.id === 'hostAVoice' || select.id === 'hostBVoice') {
+                    const podcastLanguage = document.getElementById('podcastTopic')?.getAttribute('data-language') || 'english';
+                    const gender = select.id === 'hostAVoice' ? 'Female' : 'Male';
+                    select.value = getDefaultVoiceForLanguage(podcastLanguage, gender);
+                } else {
+                    select.value = 'Wise_Woman';
+                }
             });
+        }
+
+        // 根据语言选择合适的默认语音
+        function getDefaultVoiceForLanguage(language, gender = 'Female') {
+            const languageCode = language === 'chinese' ? 'zh-cn' : 'en-us';
+            const suitableVoices = voices.filter(voice =>
+                voice.language === languageCode && voice.gender === gender
+            );
+
+            if (suitableVoices.length > 0) {
+                return suitableVoices[0].id;
+            }
+
+            // 如果没有找到合适的语音，返回该语言的第一个语音
+            const languageVoices = voices.filter(voice => voice.language === languageCode);
+            if (languageVoices.length > 0) {
+                return languageVoices[0].id;
+            }
+
+            // 最后的备选方案
+            return language === 'chinese' ? 'CN_Female_1' : 'Wise_Woman';
         }
 
         // 页面加载时获取声音列表
@@ -742,6 +801,9 @@
                 return;
             }
 
+            // Get selected language
+            const selectedLanguage = document.querySelector('input[name="storyLanguage"]:checked').value;
+
             const generateStoryBtn = document.getElementById('generateStoryBtn');
             const storyText = document.getElementById('storyText');
             const spinner = document.getElementById('storySpinner');
@@ -757,13 +819,17 @@
                 const response = await fetch('/generate-story', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ theme })
+                    body: JSON.stringify({ theme, language: selectedLanguage })
                 });
 
                 const data = await response.json();
                 if (data.success) {
                     storyText.value = data.story;
                     storyText.removeAttribute('readonly');
+
+                    // 保存故事语言信息到数据属性
+                    storyText.setAttribute('data-language', data.language || selectedLanguage);
+
                     showNotification('Story generated successfully!', 'success');
 
                     // Scroll to story text for better UX
@@ -923,11 +989,15 @@
             // 添加语音选择
             const voiceSelect = document.createElement('select');
             voiceSelect.className = 'voice-select';
-            const voiceOptionsHtml = voices.map(voice => 
+            const voiceOptionsHtml = voices.map(voice =>
                 `<option value="${voice.id}">${voice.name} (${voice.language}, ${voice.gender})</option>`
             ).join('');
             voiceSelect.innerHTML = voiceOptionsHtml;
-            voiceSelect.value = scene.type === 'dialogue' ? 'Deep_Voice_Man' : 'Wise_Woman'; // 对话用男声，旁白用女声
+
+            // 根据故事语言和场景类型选择合适的默认语音
+            const storyLanguage = document.getElementById('storyText').getAttribute('data-language') || 'english';
+            const defaultGender = scene.type === 'dialogue' ? 'Male' : 'Female';
+            voiceSelect.value = getDefaultVoiceForLanguage(storyLanguage, defaultGender);
 
             // 添加删除按钮
             const deleteBtn = document.createElement('button');
@@ -1430,6 +1500,9 @@
                 return;
             }
 
+            // Get selected language
+            const selectedLanguage = document.querySelector('input[name="podcastLanguage"]:checked').value;
+
             const button = document.getElementById('generatePodcastBtn');
             const spinner = document.getElementById('podcastSpinner');
             const btnText = document.getElementById('podcastBtnText');
@@ -1442,12 +1515,17 @@
                 const response = await fetch('/generate-podcast', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ topic })
+                    body: JSON.stringify({ topic, language: selectedLanguage })
                 });
 
                 const data = await response.json();
                 if (data.success) {
-                    document.getElementById('podcastTopic').value = data.content;
+                    const podcastTopicElement = document.getElementById('podcastTopic');
+                    podcastTopicElement.value = data.content;
+
+                    // 保存播客语言信息到数据属性
+                    podcastTopicElement.setAttribute('data-language', data.language || selectedLanguage);
+
                     showElement('podcastScriptEditor');
                 } else {
                     throw new Error(data.error);
