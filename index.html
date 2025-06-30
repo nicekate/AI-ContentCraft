@@ -604,23 +604,39 @@
 
         // 根据语言选择合适的默认语音
         function getDefaultVoiceForLanguage(language, gender = 'Female') {
-            const languageCode = language === 'chinese' ? 'zh-cn' : 'en-us';
-            const suitableVoices = voices.filter(voice =>
-                voice.language === languageCode && voice.gender === gender
-            );
+            // 所有语音都支持多语言，根据性别选择合适的默认语音
+            const suitableVoices = voices.filter(voice => voice.gender === gender);
 
             if (suitableVoices.length > 0) {
+                // 根据语言和性别选择推荐的语音
+                if (language === 'chinese') {
+                    if (gender === 'Female') {
+                        return 'Wise_Woman'; // 智慧女声
+                    } else if (gender === 'Male') {
+                        return 'Deep_Voice_Man'; // 深沉男声
+                    }
+                } else {
+                    if (gender === 'Female') {
+                        return 'Calm_Woman'; // 平静女声
+                    } else if (gender === 'Male') {
+                        return 'Elegant_Man'; // 优雅男声
+                    }
+                }
                 return suitableVoices[0].id;
             }
 
-            // 如果没有找到合适的语音，返回该语言的第一个语音
-            const languageVoices = voices.filter(voice => voice.language === languageCode);
-            if (languageVoices.length > 0) {
-                return languageVoices[0].id;
-            }
-
             // 最后的备选方案
-            return language === 'chinese' ? 'CN_Female_1' : 'Wise_Woman';
+            return 'Wise_Woman';
+        }
+
+        // 简单的语言检测函数
+        function detectLanguage(text) {
+            // 检测中文字符
+            const chineseRegex = /[\u4e00-\u9fff]/;
+            if (chineseRegex.test(text)) {
+                return 'chinese';
+            }
+            return 'english';
         }
 
         // 页面加载时获取声音列表
@@ -727,10 +743,13 @@
             progress.style.width = '0%';
 
             try {
+                // 获取故事的语言信息
+                const storyLanguage = document.getElementById('storyText').getAttribute('data-language') || 'english';
+
                 const response = await fetch('/generate-and-merge', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sections: sectionsData })
+                    body: JSON.stringify({ sections: sectionsData, language: storyLanguage })
                 });
 
                 const reader = response.body.getReader();
@@ -865,10 +884,13 @@
             scriptSections.innerHTML = ''; // 清空现有内容
             
             try {
+                // 获取故事的语言信息
+                const storyLanguage = document.getElementById('storyText').getAttribute('data-language') || 'english';
+
                 const response = await fetch('/generate-script', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ story: storyText })
+                    body: JSON.stringify({ story: storyText, language: storyLanguage })
                 });
 
                 const reader = response.body.getReader();
@@ -1368,6 +1390,9 @@
             try {
                 announceToScreenReader('Generating audio, please wait');
 
+                // 检测文本语言
+                const detectedLanguage = detectLanguage(text);
+
                 const response = await fetch('/generate-and-merge', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1375,7 +1400,8 @@
                         sections: [{
                             text: text,
                             voice: voice
-                        }]
+                        }],
+                        language: detectedLanguage
                     })
                 });
 
@@ -1651,12 +1677,16 @@
                     };
                 }).filter(s => s.text);
 
+                // 获取播客的语言信息
+                const podcastLanguage = document.getElementById('podcastTopic').getAttribute('data-language') || 'english';
+
                 const response = await fetch('/generate-and-merge', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         sections: sectionsData,
-                        theme: topic.substring(0, 20)
+                        theme: topic.substring(0, 20),
+                        language: podcastLanguage
                     })
                 });
 

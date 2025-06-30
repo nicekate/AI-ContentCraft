@@ -38,9 +38,15 @@ const replicate = new Replicate({
 });
 
 // MiniMax TTS 辅助函数
-async function generateSpeechWithMiniMax(text, voiceId = "Wise_Woman") {
+async function generateSpeechWithMiniMax(text, voiceId = "Wise_Woman", language = "english") {
     try {
-        console.log(`Generating speech with MiniMax TTS: voice=${voiceId}, text length=${text.length}`);
+        console.log(`Generating speech with MiniMax TTS: voice=${voiceId}, language=${language}, text length=${text.length}`);
+
+        // 根据语言设置language_boost参数
+        let languageBoost = "English";
+        if (language === "chinese") {
+            languageBoost = "Chinese";
+        }
 
         const output = await replicate.run(
             "minimax/speech-02-turbo",
@@ -54,6 +60,7 @@ async function generateSpeechWithMiniMax(text, voiceId = "Wise_Woman") {
                     sample_rate: 32000,
                     bitrate: 128000,
                     channel: "mono",
+                    language_boost: languageBoost,
                     english_normalization: true
                 }
             }
@@ -70,42 +77,34 @@ async function generateSpeechWithMiniMax(text, voiceId = "Wise_Woman") {
 // API 路由
 app.get('/voices', async (req, res) => {
     console.log('GET /voices request received');
-    // MiniMax Speech-02-Turbo 支持的语音列表
+    // MiniMax Speech-02-Turbo 支持的语音列表 - 所有语音都支持中英文
     const voices = [
-        // 英文语音
-        { id: "Wise_Woman", name: "Wise Woman", language: "en-us", gender: "Female" },
-        { id: "Friendly_Person", name: "Friendly Person", language: "en-us", gender: "Neutral" },
-        { id: "Inspirational_girl", name: "Inspirational Girl", language: "en-us", gender: "Female" },
-        { id: "Deep_Voice_Man", name: "Deep Voice Man", language: "en-us", gender: "Male" },
-        { id: "Calm_Woman", name: "Calm Woman", language: "en-us", gender: "Female" },
-        { id: "Casual_Guy", name: "Casual Guy", language: "en-us", gender: "Male" },
-        { id: "Lively_Girl", name: "Lively Girl", language: "en-us", gender: "Female" },
-        { id: "Patient_Man", name: "Patient Man", language: "en-us", gender: "Male" },
-        { id: "Young_Knight", name: "Young Knight", language: "en-us", gender: "Male" },
-        { id: "Determined_Man", name: "Determined Man", language: "en-us", gender: "Male" },
-        { id: "Lovely_Girl", name: "Lovely Girl", language: "en-us", gender: "Female" },
-        { id: "Decent_Boy", name: "Decent Boy", language: "en-us", gender: "Male" },
-        { id: "Imposing_Manner", name: "Imposing Manner", language: "en-us", gender: "Neutral" },
-        { id: "Elegant_Man", name: "Elegant Man", language: "en-us", gender: "Male" },
-        { id: "Sweet_Girl_2", name: "Sweet Girl", language: "en-us", gender: "Female" },
-        { id: "Exuberant_Girl", name: "Exuberant Girl", language: "en-us", gender: "Female" },
-
-        // 中文语音
-        { id: "CN_Female_1", name: "温柔女声", language: "zh-cn", gender: "Female" },
-        { id: "CN_Male_1", name: "沉稳男声", language: "zh-cn", gender: "Male" },
-        { id: "CN_Female_2", name: "活泼女声", language: "zh-cn", gender: "Female" },
-        { id: "CN_Male_2", name: "磁性男声", language: "zh-cn", gender: "Male" },
-        { id: "CN_Female_3", name: "知性女声", language: "zh-cn", gender: "Female" },
-        { id: "CN_Male_3", name: "亲和男声", language: "zh-cn", gender: "Male" }
+        { id: "Wise_Woman", name: "Wise Woman / 智慧女声", language: "multilingual", gender: "Female" },
+        { id: "Friendly_Person", name: "Friendly Person / 友善声音", language: "multilingual", gender: "Neutral" },
+        { id: "Inspirational_girl", name: "Inspirational Girl / 励志女孩", language: "multilingual", gender: "Female" },
+        { id: "Deep_Voice_Man", name: "Deep Voice Man / 深沉男声", language: "multilingual", gender: "Male" },
+        { id: "Calm_Woman", name: "Calm Woman / 平静女声", language: "multilingual", gender: "Female" },
+        { id: "Casual_Guy", name: "Casual Guy / 随性男声", language: "multilingual", gender: "Male" },
+        { id: "Lively_Girl", name: "Lively Girl / 活泼女孩", language: "multilingual", gender: "Female" },
+        { id: "Patient_Man", name: "Patient Man / 耐心男声", language: "multilingual", gender: "Male" },
+        { id: "Young_Knight", name: "Young Knight / 年轻骑士", language: "multilingual", gender: "Male" },
+        { id: "Determined_Man", name: "Determined Man / 坚定男声", language: "multilingual", gender: "Male" },
+        { id: "Lovely_Girl", name: "Lovely Girl / 可爱女孩", language: "multilingual", gender: "Female" },
+        { id: "Decent_Boy", name: "Decent Boy / 正派男孩", language: "multilingual", gender: "Male" },
+        { id: "Imposing_Manner", name: "Imposing Manner / 威严声音", language: "multilingual", gender: "Neutral" },
+        { id: "Elegant_Man", name: "Elegant Man / 优雅男声", language: "multilingual", gender: "Male" },
+        { id: "Abbess", name: "Abbess / 修女", language: "multilingual", gender: "Female" },
+        { id: "Sweet_Girl_2", name: "Sweet Girl / 甜美女孩", language: "multilingual", gender: "Female" },
+        { id: "Exuberant_Girl", name: "Exuberant Girl / 热情女孩", language: "multilingual", gender: "Female" }
     ];
     res.json(voices);
 });
 
 app.post('/generate', async (req, res) => {
-    const { text, voice = "Wise_Woman" } = req.body;
+    const { text, voice = "Wise_Woman", language = "english" } = req.body;
 
     try {
-        const audioUrl = await generateSpeechWithMiniMax(text, voice);
+        const audioUrl = await generateSpeechWithMiniMax(text, voice, language);
 
         // 返回音频URL而不是音频数据
         res.json({
@@ -122,25 +121,25 @@ app.post('/generate', async (req, res) => {
 
 // 修改生成并合并音频的路由
 app.post('/generate-and-merge', async (req, res) => {
-    const { sections } = req.body;
+    const { sections, language = "english" } = req.body;
     if (!sections || sections.length === 0) {
-        return res.status(400).json({ 
-            success: false, 
-            error: '没有有效的文本段落' 
+        return res.status(400).json({
+            success: false,
+            error: '没有有效的文本段落'
         });
     }
 
     // 改进文件名生成逻辑
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const outputFile = path.join(__dirname, `output/${timestamp}/audio.mp3`);
-    
+
     try {
         // 创建临时目录和输出目录
         const tempDir = path.join(__dirname, 'temp');
         const outputDir = path.join(__dirname, 'output', timestamp);
         await fs.mkdir(tempDir, { recursive: true });
         await fs.mkdir(outputDir, { recursive: true });
-        
+
         // 生成所有音频文件
         const audioFiles = [];
         for (let i = 0; i < sections.length; i++) {
@@ -155,8 +154,8 @@ app.post('/generate-and-merge', async (req, res) => {
             }) + '\n');
 
             try {
-                // 使用MiniMax生成音频
-                const audioUrl = await generateSpeechWithMiniMax(text, voice);
+                // 使用MiniMax生成音频，传递语言参数
+                const audioUrl = await generateSpeechWithMiniMax(text, voice, language);
 
                 // 下载音频文件
                 const response = await fetch(audioUrl);
@@ -267,8 +266,8 @@ app.post('/generate-story', async (req, res) => {
 
 // 修改生成脚本的路由
 app.post('/generate-script', async (req, res) => {
-    const { story } = req.body;
-    
+    const { story, language = "english" } = req.body;
+
     // 发送开始消息
     res.write(JSON.stringify({
         type: 'status',
@@ -276,16 +275,33 @@ app.post('/generate-script', async (req, res) => {
     }) + '\n');
 
     try {
-        const response = await openai.chat.completions.create({
-            model: 'deepseek-chat',
-            messages: [
-                { 
-                    role: 'system', 
-                    content: `Convert stories into dialogue format and return JSON format with these requirements:
+        // 根据语言设置系统提示
+        let systemContent;
+        if (language === 'chinese') {
+            systemContent = `将故事转换为对话格式并返回JSON格式，要求如下：
+1. 保持中文内容，不要翻译成英文
+2. 分离旁白和对话
+3. 不要使用星号(*)或任何特殊格式字符
+4. 格式：
+{
+  "scenes": [
+    {
+      "type": "narration",
+      "text": "场景描述或旁白"
+    },
+    {
+      "type": "dialogue",
+      "character": "角色名称",
+      "text": "对话内容"
+    }
+  ]
+}`;
+        } else {
+            systemContent = `Convert stories into dialogue format and return JSON format with these requirements:
 1. Convert any non-English text to English first
 2. Separate narration and dialogues
 3. Do not use asterisks (*) or any special formatting characters
-4. Format: 
+4. Format:
 {
   "scenes": [
     {
@@ -298,15 +314,19 @@ app.post('/generate-script', async (req, res) => {
       "text": "dialogue content"
     }
   ]
-}
-5. Keep dialogues natural and concise
-6. Add scene descriptions where needed
-7. Maintain story flow and emotion
-8. Use appropriate names for characters` 
+}`;
+        }
+
+        const response = await openai.chat.completions.create({
+            model: 'deepseek-chat',
+            messages: [
+                {
+                    role: 'system',
+                    content: systemContent
                 },
-                { 
-                    role: 'user', 
-                    content: `Convert this story into script format:\n${story}` 
+                {
+                    role: 'user',
+                    content: `Convert this story into script format:\n${story}`
                 }
             ],
             temperature: 0.7,
