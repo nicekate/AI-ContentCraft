@@ -12,3 +12,11 @@ coverage/
 
 # 输出文件目录
 output/
+
+# 测试文件
+test-ui.html
+test-podcast-layout.html
+
+# UI改进说明文档
+UI_OPTIMIZATION_SUMMARY.md
+UI_UPGRADE_GUIDE.md

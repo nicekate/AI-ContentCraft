@@ -9,6 +9,7 @@
 - [数据流程](#数据流程)
 - [部署指南](#部署指南)
 - [开发指南](#开发指南)
+- [项目文件管理](#项目文件管理)
 - [故障排除](#故障排除)
 - [版本历史](#版本历史)
 
@@ -29,9 +30,10 @@ AI ContentCraft 是一个多功能的内容创作工具，旨在通过集成多�
 ### 技术栈
 
 #### 前端技术
-- **HTML5/CSS3**：现代化的用户界面
+- **HTML5/CSS3**：现代化的用户界面设计
 - **JavaScript (ES6+)**：交互逻辑和API调用
 - **响应式设计**：适配不同设备屏幕
+- **现代化UI系统**：基于CSS变量和现代设计语言的界面优化
 
 #### 后端技术
 - **Node.js**：服务器运行环境
@@ -889,7 +891,8 @@ docker-compose down
 AI-ContentCraft/
 ├── server.js                 # 主服务器文件
 ├── index.html                # 前端主页面
-├── styles.css                # 额外样式文件
+├── styles.css                # 基础样式文件
+├── modern-styles.css         # 现代化UI样式文件
 ├── package.json              # 项目配置和依赖
 ├── package-lock.json         # 依赖锁定文件
 ├── nodemon.json              # nodemon配置
@@ -1186,6 +1189,113 @@ const imageObserver = new IntersectionObserver((entries) => {
     });
 });
 ```
+
+## 项目文件管理
+
+### .gitignore配置
+
+项目使用.gitignore文件来管理版本控制中需要忽略的文件和目录，确保仓库的整洁性和安全性。
+
+#### 当前.gitignore配置
+```gitignore
+# 环境变量
+.env
+
+# 常见的需要忽略的文件/目录
+node_modules/
+dist/
+build/
+.DS_Store
+*.log
+.cache/
+coverage/
+
+# 输出文件目录
+output/
+
+# 测试文件
+test-ui.html
+test-podcast-layout.html
+
+# UI改进说明文档
+UI_OPTIMIZATION_SUMMARY.md
+UI_UPGRADE_GUIDE.md
+```
+
+#### 忽略文件说明
+
+**环境变量文件**
+- `.env` - 包含API密钥等敏感信息，不应提交到版本控制
+
+**依赖和构建文件**
+- `node_modules/` - npm依赖包目录，通过package.json管理
+- `dist/`, `build/` - 构建输出目录
+- `.cache/`, `coverage/` - 缓存和测试覆盖率文件
+
+**系统文件**
+- `.DS_Store` - macOS系统生成的文件
+- `*.log` - 日志文件
+
+**项目输出文件**
+- `output/` - 用户生成的音频、图片等内容文件
+
+**开发和测试文件**
+- `test-ui.html` - UI测试页面
+- `test-podcast-layout.html` - 播客布局测试页面
+
+**文档文件**
+- `UI_OPTIMIZATION_SUMMARY.md` - UI优化总结文档
+- `UI_UPGRADE_GUIDE.md` - UI升级指南文档
+
+### 文件组织原则
+
+#### 1. 核心文件
+保留在版本控制中的重要文件：
+- `server.js` - 主服务器文件
+- `index.html` - 主页面文件
+- `styles.css` - 基础样式
+- `modern-styles.css` - 现代化UI样式
+- `package.json` - 项目配置
+- `README.md` - 项目说明
+- `TECHNICAL_DOCUMENTATION.md` - 技术文档
+
+#### 2. 临时文件管理
+- 测试文件和临时文档不纳入版本控制
+- 用户生成的内容存储在output目录，不提交到仓库
+- 开发过程中的实验性文件应及时清理
+
+#### 3. 安全考虑
+- 所有包含API密钥的文件必须在.gitignore中
+- 敏感配置信息通过环境变量管理
+- 用户数据和生成内容不应提交到公共仓库
+
+### UI文件结构
+
+#### 样式文件层次
+```
+样式系统/
+├── styles.css           # 基础样式和兼容性
+├── modern-styles.css    # 现代化UI设计系统
+└── index.html          # 主页面（引用两个样式文件）
+```
+
+#### 设计系统组织
+- **基础层**：`styles.css` 提供基本样式和向后兼容
+- **现代层**：`modern-styles.css` 提供现代化设计系统
+- **主题系统**：通过CSS变量实现主题切换
+- **响应式设计**：统一的断点和布局系统
+
+### 文档管理
+
+#### 文档分类
+- **用户文档**：README.md - 面向用户的使用说明
+- **技术文档**：TECHNICAL_DOCUMENTATION.md - 面向开发者的技术参考
+- **临时文档**：UI优化相关文档（不纳入版本控制）
+
+#### 文档维护原则
+- 核心文档随代码更新同步维护
+- 临时性说明文档在完成后移除或归档
+- 保持文档的准确性和时效性
 
 ## 故障排除
 
@@ -1542,6 +1652,34 @@ app.get('/health', async (req, res) => {
 - 🐛 修复临时文件清理问题
 - 🐛 修复并发请求处理
 
+### v1.2.1 (2025-06-30)
+**UI优化和项目管理版本**
+
+**新功能：**
+- ✨ 全新现代化UI设计系统
+- ✨ 响应式布局优化
+- ✨ 深色/浅色主题支持
+- ✨ 改进的用户交互体验
+
+**UI改进：**
+- 🎨 现代化设计语言和颜色系统
+- 🎨 优化的卡片式布局和间距
+- 🎨 改进的按钮和表单设计
+- 🎨 增强的视觉层次和可读性
+- 🎨 更好的移动端适配
+
+**项目管理：**
+- 📁 更新.gitignore配置，排除测试文件和文档
+- 📁 添加UI优化说明文档
+- 📁 完善技术文档结构
+- 📁 改进项目文件组织
+
+**技术改进：**
+- 🔧 添加modern-styles.css现代化样式系统
+- 🔧 优化CSS变量和主题系统
+- 🔧 改进响应式断点设计
+- 🔧 增强可访问性支持
+
 ### v1.3.0 (计划中)
 **性能优化版本**
 
@@ -1555,7 +1693,7 @@ app.get('/health', async (req, res) => {
 - 🔮 数据库集成
 - 🔮 缓存机制优化
 - 🔮 API限流和配额管理
-- 🔮 移动端适配
+- 🔮 进一步优化移动端体验
 
 ### 开发路线图
 
