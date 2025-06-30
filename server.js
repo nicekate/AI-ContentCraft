@@ -445,22 +445,35 @@ app.post('/generate-podcast', async (req, res) => {
 });
 
 app.post('/generate-podcast-script', async (req, res) => {
-    const { content } = req.body;
+    const { content, language = 'english' } = req.body;
 
     if (DEBUG_MODE) {
         console.log('=== PODCAST SCRIPT GENERATION DEBUG ===');
         console.log('Content length:', content ? content.length : 0);
+        console.log('Language:', language);
         console.log('DeepSeek API Key:', process.env.DEEPSEEK_API_KEY ? 'Present' : 'Missing');
     }
 
     try {
         if (DEBUG_MODE) console.log('Making request to DeepSeek API for script generation...');
-        const response = await openai.chat.completions.create({
-            model: 'deepseek-chat',
-            messages: [
-                {
-                    role: 'system',
-                    content: `Convert content into a natural English conversation between two podcast hosts (A and B). Requirements:
+
+        // 根据语言设置系统提示
+        let systemContent, userContent;
+
+        if (language === 'chinese') {
+            systemContent = `将内容转换为两位播客主持人（A和B）之间的自然中文对话。要求：
+1. 将回复格式化为对话对象的JSON数组
+2. 每个对象应该有'host'（'A'或'B'）和'text'字段
+3. 保持对话自然且引人入胜
+4. 保持中文内容，不要翻译成英文
+格式示例：
+[
+    {"host": "A", "text": "欢迎收听我们的节目..."},
+    {"host": "B", "text": "今天我们要讨论..."}
+]`;
+            userContent = `将以下内容转换为播客对话：\n${content}`;
+        } else {
+            systemContent = `Convert content into a natural English conversation between two podcast hosts (A and B). Requirements:
 1. Format the response as JSON array of dialog objects
 2. Each object should have 'host' (either 'A' or 'B') and 'text' fields
 3. Keep the conversation natural and engaging
@@ -469,17 +482,29 @@ Format example:
 [
     {"host": "A", "text": "Welcome to our show..."},
     {"host": "B", "text": "Today we're discussing..."}
-]`
+]`;
+            userContent = `Convert this content into a podcast conversation:\n${content}`;
+        }
+
+        const response = await openai.chat.completions.create({
+            model: 'deepseek-chat',
+            messages: [
+                {
+                    role: 'system',
+                    content: systemContent
                 },
                 {
                     role: 'user',
-                    content: `Convert this content into a podcast conversation:\n${content}`
+                    content: userContent
                 }
             ],
         });
 
         if (DEBUG_MODE) console.log('DeepSeek API response received for script generation');
         const scriptContent = response.choices[0].message.content;
+        if (DEBUG_MODE) {
+            console.log('Generated script content:', scriptContent.substring(0, 500) + '...');
+        }
         let scriptData;
         try {
             scriptData = JSON.parse(scriptContent);

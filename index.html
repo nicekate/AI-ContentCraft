@@ -113,7 +113,7 @@
                 <div class="script-container">
                     <h2 id="script-title">🎬 脚本转换</h2>
                     <div class="script-buttons">
-                        <button onclick="generateScript()" id="convertToScript" class="btn primary" aria-describedby="convert-help">
+                        <button onclick="generateScript()" id="convertToScript" class="btn primary convert-script" aria-describedby="convert-help">
                             <span class="spinner" id="convertSpinner"></span>
                             <span id="convertText">📝 转换为脚本</span>
                         </button>
@@ -368,7 +368,7 @@
                         </div>
 
                         <div class="script-controls">
-                            <button onclick="generatePodcastScript()" id="generateScriptBtn" class="action-btn" aria-describedby="script-help">
+                            <button onclick="generatePodcastScript()" id="generateScriptBtn" class="btn primary convert-script" aria-describedby="script-help">
                                 <span>📝</span> 转换为脚本
                             </button>
                             <button onclick="addPodcastDialog('A')" class="action-btn" aria-describedby="add-a-help">
@@ -642,6 +642,27 @@
         // 页面加载时获取声音列表
         loadVoices();
 
+        // 添加播客语言选择变化的事件监听器
+        document.addEventListener('DOMContentLoaded', function() {
+            const podcastLanguageRadios = document.querySelectorAll('input[name="podcastLanguage"]');
+            podcastLanguageRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updatePodcastVoiceDefaults(this.value);
+                });
+            });
+        });
+
+        // 更新播客主持人的默认语音
+        function updatePodcastVoiceDefaults(language) {
+            const hostAVoice = document.getElementById('hostAVoice');
+            const hostBVoice = document.getElementById('hostBVoice');
+
+            if (hostAVoice && hostBVoice) {
+                hostAVoice.value = getDefaultVoiceForLanguage(language, 'Female');
+                hostBVoice.value = getDefaultVoiceForLanguage(language, 'Male');
+            }
+        }
+
         function startProgressSimulation() {
             progress.style.width = '0%';
             let width = 0;
@@ -877,8 +898,7 @@
 
             // 设置按钮为生成中状态
             convertToScript.disabled = true;
-            convertToScript.style.backgroundColor = '#ccc';  // 灰色背景
-            convertToScript.textContent = '正在生成...';
+            convertToScript.innerHTML = '<span class="spinner" id="convertSpinner" style="display: inline-block;"></span><span>正在生成...</span>';
 
             const scriptSections = document.getElementById('scriptSections');
             scriptSections.innerHTML = ''; // 清空现有内容
@@ -957,8 +977,8 @@
             } finally {
                 // 恢复按钮状态
                 convertToScript.disabled = false;
-                convertToScript.style.backgroundColor = '#4a90e2';  // 恢复原来的蓝色
-                convertToScript.textContent = '转换为脚本';
+                convertToScript.style.backgroundColor = '';  // 清除内联样式，使用CSS类样式
+                convertToScript.innerHTML = '<span class="spinner" id="convertSpinner"></span><span id="convertText">📝 转换为脚本</span>';
             }
         }
 
@@ -1625,26 +1645,33 @@
                 return;
             }
 
+            // 获取播客语言信息
+            const podcastLanguage = document.getElementById('podcastTopic').getAttribute('data-language') ||
+                                  document.querySelector('input[name="podcastLanguage"]:checked').value;
+
             const button = document.getElementById('generateScriptBtn');
             button.disabled = true;
-            button.textContent = 'Converting...';
+            button.innerHTML = '<span>⏳</span> 正在转换...';
 
             try {
                 const response = await fetch('/generate-podcast-script', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content })
+                    body: JSON.stringify({ content, language: podcastLanguage })
                 });
 
                 const data = await response.json();
                 if (data.success) {
                     const container = document.getElementById('podcastSections');
                     container.innerHTML = '';
-                    
+
                     data.script.forEach((dialog, index) => {
                         const section = createPodcastDialog(dialog.host, dialog.text, index);
                         container.appendChild(section);
                     });
+
+                    // 根据当前语言设置更新主持人语音
+                    updatePodcastVoiceDefaults(podcastLanguage);
                 } else {
                     throw new Error(data.error);
                 }
@@ -1652,7 +1679,7 @@
                 alert('转换为脚本失败：' + error.message);
             } finally {
                 button.disabled = false;
-                button.textContent = '转换为脚本';
+                button.innerHTML = '<span>📝</span> 转换为脚本';
             }
         }
 

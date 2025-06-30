@@ -186,15 +186,18 @@
 }
 
 .btn.primary {
-  background: linear-gradient(135deg, var(--color-primary), var(--primary-700));
-  color: var(--text-inverse);
-  box-shadow: var(--shadow-sm);
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  border: 2px solid #2563eb;
+  font-weight: 600;
 }
 
 .btn.primary:hover {
-  background: linear-gradient(135deg, var(--color-primary-hover), var(--primary-800));
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
+  border-color: #1d4ed8;
 }
 
 .btn.primary:active {
@@ -230,6 +233,35 @@
 
 .btn:disabled::before {
   display: none;
+}
+
+/* 特殊突出的转换为脚本按钮样式 */
+.btn.convert-script {
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  color: white;
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  border: 3px solid #2563eb;
+  font-weight: 700;
+  font-size: 1.1em;
+  padding: var(--space-4) var(--space-6);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn.convert-script::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+}
+
+.btn.convert-script:hover {
+  background: linear-gradient(135deg, #2563eb, #1e3a8a);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+  transform: translateY(-3px);
+  border-color: #1e3a8a;
+}
+
+.btn.convert-script:active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
 }
 
 .bottom-buttons {
