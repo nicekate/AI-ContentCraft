@@ -40,7 +40,7 @@ AI ContentCraft 是一个多功能的内容创作工具，旨在通过集成多�
 
 #### AI服务集成
 - **DeepSeek AI**：文本生成服务
-- **Kokoro TTS**：语音合成服务
+- **MiniMax Speech-02-Turbo**：语音合成服务（通过Replicate API）
 - **Replicate**：图像生成服务
 
 #### 工具和依赖
@@ -68,7 +68,7 @@ graph TB
     
     subgraph "AI服务层"
         G[DeepSeek AI<br/>文本生成]
-        H[Kokoro TTS<br/>语音合成]
+        H[MiniMax TTS<br/>语音合成]
         I[Replicate<br/>图像生成]
     end
     
@@ -438,32 +438,42 @@ app.post('/generate-story', async (req, res) => {
 ### 2. 语音合成模块
 
 #### 功能概述
-语音合成模块使用Kokoro TTS技术，支持多种声音类型，能够将文本转换为自然流畅的语音。
+语音合成模块使用MiniMax Speech-02-Turbo技术，通过Replicate API调用，支持多种声音类型和情感表达，能够将文本转换为自然流畅的语音。
 
 #### 技术实现
 ```javascript
-// TTS初始化
-const model_id = "onnx-community/Kokoro-82M-ONNX";
-const tts = await KokoroTTS.from_pretrained(model_id, {
-    dtype: "q8",
-});
-
-// 语音生成
-const audio = await tts.generate(text, {
-    voice: voice,
-});
+// MiniMax TTS 辅助函数
+async function generateSpeechWithMiniMax(text, voiceId = "Wise_Woman") {
+    const output = await replicate.run(
+        "minimax/speech-02-turbo",
+        {
+            input: {
+                text: text,
+                voice_id: voiceId,
+                speed: 1,
+                volume: 1,
+                pitch: 0,
+                sample_rate: 32000,
+                bitrate: 128000,
+                channel: "mono",
+                english_normalization: true
+            }
+        }
+    );
+    return output; // 返回音频文件URL
+}
 ```
 
 #### 支持的声音类型
-- **英语（美式）**：Nicole, Bella, Sarah, Sky, Adam, Michael
-- **英语（英式）**：Emma, Isabella, George, Lewis
-- **性别多样性**：男声和女声选项
-- **语言特色**：不同地区口音支持
+- **英语语音**：Wise Woman, Friendly Person, Deep Voice Man, Calm Woman
+- **情感表达**：Inspirational Girl, Lively Girl, Patient Man, Young Knight
+- **性格特色**：Determined Man, Lovely Girl, Decent Boy, Elegant Man
+- **多样化选择**：16种不同风格的英语语音
 
 #### 音频处理流程
 1. **文本预处理**：清理和格式化输入文本
-2. **语音生成**：调用Kokoro TTS生成音频
-3. **格式转换**：输出WAV格式音频文件
+2. **语音生成**：调用MiniMax TTS生成音频URL
+3. **文件下载**：从URL下载MP3格式音频文件
 4. **批量合并**：使用FFmpeg合并多段音频
 
 ### 3. 图像生成模块
@@ -579,7 +589,7 @@ sequenceDiagram
     participant F as 前端界面
     participant S as Express服务器
     participant D as DeepSeek API
-    participant K as Kokoro TTS
+    participant K as MiniMax TTS
     participant R as Replicate API
     participant FF as FFmpeg
 
@@ -902,13 +912,11 @@ AI-ContentCraft/
 ```javascript
 // 主要模块导入
 import express from 'express';
-import { KokoroTTS } from "kokoro-js";
 import OpenAI from 'openai';
 import Replicate from "replicate";
 
 // 服务初始化
 const app = express();
-const tts = await KokoroTTS.from_pretrained(model_id);
 const openai = new OpenAI({ baseURL: 'https://api.deepseek.com/v1' });
 const replicate = new Replicate();
 

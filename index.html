@@ -136,7 +136,7 @@
                     <div class="audio-container">
                         <label for="storyAudioPlayer" class="sr-only">Generated story audio</label>
                         <audio id="storyAudioPlayer" controls preload="none" aria-describedby="audio-player-help">
-                            <source src="" type="audio/wav">
+                            <source src="" type="audio/mp3">
                             Your browser does not support the audio element.
                         </audio>
                         <div id="audio-player-help" class="sr-only">Audio player for the generated story</div>
@@ -180,7 +180,7 @@
                     <div class="audio-container">
                         <label for="simpleTtsPlayer" class="sr-only">Generated audio</label>
                         <audio id="simpleTtsPlayer" controls preload="none" aria-describedby="simple-audio-help">
-                            <source src="" type="audio/wav">
+                            <source src="" type="audio/mp3">
                             Your browser does not support the audio element.
                         </audio>
                         <div id="simple-audio-help" class="sr-only">Audio player for the generated speech</div>
@@ -275,7 +275,7 @@
                     <div class="audio-container">
                         <label for="multiAudioPlayer" class="sr-only">Generated merged audio</label>
                         <audio id="multiAudioPlayer" controls preload="none" aria-describedby="multi-audio-help">
-                            <source src="" type="audio/wav">
+                            <source src="" type="audio/mp3">
                             Your browser does not support the audio element.
                         </audio>
                         <div id="multi-audio-help" class="sr-only">Audio player for the merged multi-voice audio</div>
@@ -384,7 +384,7 @@
                         <div class="audio-container">
                             <label for="podcastAudioPlayer" class="sr-only">Generated podcast audio</label>
                             <audio id="podcastAudioPlayer" controls preload="none" aria-describedby="podcast-player-help">
-                                <source src="" type="audio/wav">
+                                <source src="" type="audio/mp3">
                                 Your browser does not support the audio element.
                             </audio>
                             <div id="podcast-player-help" class="sr-only">Audio player for the generated podcast</div>
@@ -541,12 +541,12 @@
                         `<option value="${voice.id}">${voice.name} (${voice.language}, ${voice.gender})</option>`
                     ).join('');
                     simpleTtsVoice.innerHTML = voiceOptionsHtml;
-                    simpleTtsVoice.value = 'af_nicole';
+                    simpleTtsVoice.value = 'Wise_Woman';
                 }
             } catch (error) {
                 console.error('加载声音失败:', error);
                 voices = [
-                    { id: "af_nicole", name: "Nicole (Default)", language: "en-us", gender: "Female" }
+                    { id: "Wise_Woman", name: "Wise Woman (Default)", language: "en-us", gender: "Female" }
                 ];
                 updateAllVoiceSelects();
             }
@@ -560,7 +560,7 @@
             
             voiceSelects.forEach(select => {
                 select.innerHTML = voiceOptionsHtml;
-                select.value = 'af_nicole';
+                select.value = 'Wise_Woman';
             });
         }
 
@@ -635,9 +635,9 @@
             `;
             panels.appendChild(panel);
             
-            // 设置默认语音为 Nicole
+            // 设置默认语音为 Wise Woman
             const voiceSelect = panel.querySelector('.voice-select');
-            voiceSelect.value = 'af_nicole';
+            voiceSelect.value = 'Wise_Woman';
             
             // 切换到新标签
             switchTab(newIndex);
@@ -927,7 +927,7 @@
                 `<option value="${voice.id}">${voice.name} (${voice.language}, ${voice.gender})</option>`
             ).join('');
             voiceSelect.innerHTML = voiceOptionsHtml;
-            voiceSelect.value = scene.type === 'dialogue' ? 'am_michael' : 'af_nicole'; // 对话用男声，旁白用女声
+            voiceSelect.value = scene.type === 'dialogue' ? 'Deep_Voice_Man' : 'Wise_Woman'; // 对话用男声，旁白用女声
 
             // 添加删除按钮
             const deleteBtn = document.createElement('button');

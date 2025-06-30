@@ -32,7 +32,7 @@ AI ContentCraft is a versatile content creation tool that integrates text genera
 - Backend: Node.js + Express
 - AI Services:
   - DeepSeek AI: Text generation (using [DeepSeek Chat API](https://platform.deepseek.com/))
-  - Kokoro TTS: Speech synthesis (using [Kokoro-82M-ONNX model](https://huggingface.co/onnx-community/Kokoro-82M-ONNX))
+  - MiniMax Speech-02-Turbo: Speech synthesis (using [MiniMax TTS via Replicate](https://replicate.com/minimax/speech-02-turbo))
   - Replicate: Image generation (using [Replicate API](https://replicate.com/))
 - Other tools: FFmpeg (audio processing) ([FFmpeg official site](https://ffmpeg.org/))
 
@@ -53,7 +53,7 @@ git clone https://github.com/nicekate/AI-ContentCraft.git
 cd AI-ContentCraft
 
 # Install project dependencies
-npm install dotenv express kokoro-js openai replicate
+npm install dotenv express openai replicate
 
 # Install dev dependencies
 npm install -D nodemon
@@ -207,7 +207,7 @@ git clone https://github.com/nicekate/AI-ContentCraft.git
 cd AI-ContentCraft
 
 # 安装项目依赖
-npm install dotenv express kokoro-js openai replicate
+npm install dotenv express openai replicate
 
 # 安装开发依赖
 npm install -D nodemon

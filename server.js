@@ -1,5 +1,4 @@
 import express from 'express';
-import { KokoroTTS } from "kokoro-js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
@@ -29,55 +28,85 @@ app.use('/output', express.static(path.join(__dirname, 'output')));
 // 创建 output 目录
 await fs.mkdir(path.join(__dirname, 'output'), { recursive: true });
 
-// 初始化 TTS
-console.log('Initializing TTS...');
-const model_id = "onnx-community/Kokoro-82M-ONNX";
-const tts = await KokoroTTS.from_pretrained(model_id, {
-    dtype: "q8",
-});
-console.log('TTS initialized successfully');
+// 初始化 TTS (使用 MiniMax Speech-02-Turbo)
+console.log('Initializing MiniMax TTS...');
+console.log('MiniMax TTS ready to use via Replicate API');
 
 // 在初始化 OpenAI 之前添加 Replicate 客户端
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
 });
 
+// MiniMax TTS 辅助函数
+async function generateSpeechWithMiniMax(text, voiceId = "Wise_Woman") {
+    try {
+        console.log(`Generating speech with MiniMax TTS: voice=${voiceId}, text length=${text.length}`);
+
+        const output = await replicate.run(
+            "minimax/speech-02-turbo",
+            {
+                input: {
+                    text: text,
+                    voice_id: voiceId,
+                    speed: 1,
+                    volume: 1,
+                    pitch: 0,
+                    sample_rate: 32000,
+                    bitrate: 128000,
+                    channel: "mono",
+                    english_normalization: true
+                }
+            }
+        );
+
+        console.log('MiniMax TTS output:', output);
+        return output; // 返回音频文件URL
+    } catch (error) {
+        console.error('MiniMax TTS error:', error);
+        throw error;
+    }
+}
+
 // API 路由
 app.get('/voices', async (req, res) => {
     console.log('GET /voices request received');
-    // 硬编码声音列表
+    // MiniMax Speech-02-Turbo 支持的语音列表
     const voices = [
-        { id: "af", name: "Default", language: "en-us", gender: "Female" },
-        { id: "af_bella", name: "Bella", language: "en-us", gender: "Female" },
-        { id: "af_nicole", name: "Nicole", language: "en-us", gender: "Female" },
-        { id: "af_sarah", name: "Sarah", language: "en-us", gender: "Female" },
-        { id: "af_sky", name: "Sky", language: "en-us", gender: "Female" },
-        { id: "am_adam", name: "Adam", language: "en-us", gender: "Male" },
-        { id: "am_michael", name: "Michael", language: "en-us", gender: "Male" },
-        { id: "bf_emma", name: "Emma", language: "en-gb", gender: "Female" },
-        { id: "bf_isabella", name: "Isabella", language: "en-gb", gender: "Female" },
-        { id: "bm_george", name: "George", language: "en-gb", gender: "Male" },
-        { id: "bm_lewis", name: "Lewis", language: "en-gb", gender: "Male" }
+        { id: "Wise_Woman", name: "Wise Woman", language: "en-us", gender: "Female" },
+        { id: "Friendly_Person", name: "Friendly Person", language: "en-us", gender: "Neutral" },
+        { id: "Inspirational_girl", name: "Inspirational Girl", language: "en-us", gender: "Female" },
+        { id: "Deep_Voice_Man", name: "Deep Voice Man", language: "en-us", gender: "Male" },
+        { id: "Calm_Woman", name: "Calm Woman", language: "en-us", gender: "Female" },
+        { id: "Casual_Guy", name: "Casual Guy", language: "en-us", gender: "Male" },
+        { id: "Lively_Girl", name: "Lively Girl", language: "en-us", gender: "Female" },
+        { id: "Patient_Man", name: "Patient Man", language: "en-us", gender: "Male" },
+        { id: "Young_Knight", name: "Young Knight", language: "en-us", gender: "Male" },
+        { id: "Determined_Man", name: "Determined Man", language: "en-us", gender: "Male" },
+        { id: "Lovely_Girl", name: "Lovely Girl", language: "en-us", gender: "Female" },
+        { id: "Decent_Boy", name: "Decent Boy", language: "en-us", gender: "Male" },
+        { id: "Imposing_Manner", name: "Imposing Manner", language: "en-us", gender: "Neutral" },
+        { id: "Elegant_Man", name: "Elegant Man", language: "en-us", gender: "Male" },
+        { id: "Sweet_Girl_2", name: "Sweet Girl", language: "en-us", gender: "Female" },
+        { id: "Exuberant_Girl", name: "Exuberant Girl", language: "en-us", gender: "Female" }
     ];
     res.json(voices);
 });
 
 app.post('/generate', async (req, res) => {
-    const { text, voice = "af_nicole" } = req.body;
-    
+    const { text, voice = "Wise_Woman" } = req.body;
+
     try {
-        const audio = await tts.generate(text, {
-            voice: voice,
-        });
-        // 返回音频数据而不是保存文件
-        res.json({ 
+        const audioUrl = await generateSpeechWithMiniMax(text, voice);
+
+        // 返回音频URL而不是音频数据
+        res.json({
             success: true,
-            audioData: audio.data // 返回音频数据
+            audioUrl: audioUrl // 返回音频文件URL
         });
     } catch (error) {
-        res.status(500).json({ 
-            success: false, 
-            error: error.message 
+        res.status(500).json({
+            success: false,
+            error: error.message
         });
     }
 });
@@ -94,7 +123,7 @@ app.post('/generate-and-merge', async (req, res) => {
 
     // 改进文件名生成逻辑
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const outputFile = path.join(__dirname, `output/${timestamp}/audio.wav`);
+    const outputFile = path.join(__dirname, `output/${timestamp}/audio.mp3`);
     
     try {
         // 创建临时目录和输出目录
@@ -107,7 +136,7 @@ app.post('/generate-and-merge', async (req, res) => {
         const audioFiles = [];
         for (let i = 0; i < sections.length; i++) {
             const { text, voice } = sections[i];
-            
+
             // 发送进度更新
             res.write(JSON.stringify({
                 type: 'progress',
@@ -117,9 +146,20 @@ app.post('/generate-and-merge', async (req, res) => {
             }) + '\n');
 
             try {
-                const audio = await tts.generate(text, { voice });
-                const tempFile = path.join(tempDir, `temp-${i}.wav`);
-                await audio.save(tempFile);
+                // 使用MiniMax生成音频
+                const audioUrl = await generateSpeechWithMiniMax(text, voice);
+
+                // 下载音频文件
+                const response = await fetch(audioUrl);
+                if (!response.ok) {
+                    throw new Error(`Failed to download audio: ${response.status}`);
+                }
+
+                const arrayBuffer = await response.arrayBuffer();
+                const buffer = Buffer.from(arrayBuffer);
+
+                const tempFile = path.join(tempDir, `temp-${i}.mp3`);
+                await fs.writeFile(tempFile, buffer);
                 audioFiles.push(tempFile);
             } catch (error) {
                 console.error(`Error generating audio for section ${i}:`, error);
@@ -142,9 +182,9 @@ app.post('/generate-and-merge', async (req, res) => {
             const fileList = audioFiles.map(f => `file '${f}'`).join('\n');
             await fs.writeFile(listFile, fileList);
 
-            // 合并音频文件
+            // 合并音频文件 (MP3格式)
             const ffmpegPath = '/Users/katemac/anaconda3/bin/ffmpeg';
-            await execAsync(`"${ffmpegPath}" -f concat -safe 0 -i "${listFile}" -c copy "${outputFile}"`);
+            await execAsync(`"${ffmpegPath}" -f concat -safe 0 -i "${listFile}" -c:a libmp3lame -b:a 128k "${outputFile}"`);
 
             // 清理临时文件
             await Promise.all([
