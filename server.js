@@ -581,7 +581,7 @@ app.post('/generate-image', async (req, res) => {
     
     try {
         const output = await replicate.run(
-            "black-forest-labs/flux-schnell",
+            "black-forest-labs/flux-kontext-dev",
             {
                 input: {
                     prompt: prompt,
@@ -738,7 +738,7 @@ ${storyContext}`
 
             try {
                 const output = await replicate.run(
-                    "black-forest-labs/flux-schnell",
+                    "black-forest-labs/flux-kontext-dev",
                     {
                         input: {
                             prompt: prompt,
