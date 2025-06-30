@@ -581,13 +581,13 @@ app.post('/generate-image', async (req, res) => {
     
     try {
         const output = await replicate.run(
-            "black-forest-labs/flux-kontext-dev",
+            "black-forest-labs/flux-dev",
             {
                 input: {
                     prompt: prompt,
                     seed: seed,
-                    num_inference_steps: 4,
-                    guidance_scale: 7.5
+                    num_inference_steps: 50,
+                    guidance: 3.5
                 }
             }
         );
@@ -738,13 +738,13 @@ ${storyContext}`
 
             try {
                 const output = await replicate.run(
-                    "black-forest-labs/flux-kontext-dev",
+                    "black-forest-labs/flux-dev",
                     {
                         input: {
                             prompt: prompt,
                             seed: 1234,
-                            num_inference_steps: 4,
-                            guidance_scale: 7.5
+                            num_inference_steps: 50,
+                            guidance: 3.5
                         }
                     }
                 );

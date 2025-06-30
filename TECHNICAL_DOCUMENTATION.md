@@ -479,7 +479,7 @@ async function generateSpeechWithMiniMax(text, voiceId = "Wise_Woman") {
 ### 3. 图像生成模块
 
 #### 功能概述
-图像生成模块集成Replicate的Flux-Kontext-Dev模型，为故事场景自动生成高质量的插图。
+图像生成模块集成Replicate的Flux-Dev模型，为故事场景自动生成高质量的插图。
 
 #### 工作流程
 1. **提示词生成**：基于故事内容生成图像描述
@@ -1318,13 +1318,13 @@ const timeoutId = setTimeout(() => controller.abort(), 60000); // 60秒超时
 
 try {
     const output = await replicate.run(
-        "black-forest-labs/flux-kontext-dev",
+        "black-forest-labs/flux-dev",
         {
             input: {
                 prompt: sanitizePrompt(prompt),
                 seed: seed,
-                num_inference_steps: 4,
-                guidance_scale: 7.5
+                num_inference_steps: 50,
+                guidance: 3.5
             }
         },
         { signal: controller.signal }
