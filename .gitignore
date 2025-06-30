@@ -9,4 +9,6 @@ build/
 *.log
 .cache/
 coverage/
-output/ 
+
+# 输出文件目录
+output/
