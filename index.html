@@ -58,54 +58,121 @@
 
             <!-- Story Generator Page -->
             <section id="storyPage" class="page active" aria-labelledby="story-title">
-                <!-- Story Generation Section -->
-                <div class="story-container">
-                    <h1 id="story-title">✨ 故事生成</h1>
-                    <div class="form-group">
-                        <label for="themeInput" class="sr-only">故事主题</label>
-                        <input
-                            type="text"
-                            id="themeInput"
-                            class="theme-input"
-                            placeholder="输入您的故事主题（例如：'太空中的神奇冒险'）..."
-                            aria-describedby="theme-help"
-                            autocomplete="off"
-                        >
-                        <div id="theme-help" class="sr-only">为您的故事输入主题或话题</div>
-                    </div>
+                <div class="story-page-layout">
+                    <!-- Left Side: Instructions Panel -->
+                    <div class="instructions-panel">
+                        <div class="instructions-header">
+                            <h2>📋 操作指南</h2>
+                            <p class="instructions-subtitle">按照以下步骤创建您的故事</p>
+                        </div>
 
-                    <!-- Language Selection for Story -->
-                    <div class="form-group">
-                        <label class="language-label">选择故事语言 / Choose Story Language:</label>
-                        <div class="language-options">
-                            <label class="radio-option">
-                                <input type="radio" name="storyLanguage" value="chinese" checked>
-                                <span class="radio-text">🇨🇳 中文</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="storyLanguage" value="english">
-                                <span class="radio-text">🇺🇸 English</span>
-                            </label>
+                        <div class="instruction-steps">
+                            <div class="instruction-step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h3>输入故事主题</h3>
+                                    <p>在右侧输入框中描述您想要的故事主题，例如"太空冒险"、"魔法森林"等</p>
+                                </div>
+                                <div class="step-arrow">→</div>
+                            </div>
+
+                            <div class="instruction-step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h3>选择语言</h3>
+                                    <p>选择您希望生成故事的语言：中文或英文</p>
+                                </div>
+                                <div class="step-arrow">→</div>
+                            </div>
+
+                            <div class="instruction-step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h3>生成故事</h3>
+                                    <p>点击"生成故事"按钮，AI将为您创作一个精彩的故事</p>
+                                </div>
+                                <div class="step-arrow">→</div>
+                            </div>
+
+                            <div class="instruction-step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h3>转换为脚本</h3>
+                                    <p>故事生成后，可以将其转换为包含对话和旁白的脚本格式</p>
+                                </div>
+                                <div class="step-arrow">→</div>
+                            </div>
+
+                            <div class="instruction-step">
+                                <div class="step-number">5</div>
+                                <div class="step-content">
+                                    <h3>生成音频和图片</h3>
+                                    <p>为每个脚本段落生成语音和配图，创建完整的多媒体故事</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tips-section">
+                            <h3>💡 小贴士</h3>
+                            <ul class="tips-list">
+                                <li>主题描述越详细，生成的故事越精彩</li>
+                                <li>可以指定故事类型，如"科幻"、"童话"、"悬疑"等</li>
+                                <li>生成后可以编辑故事内容，让它更符合您的需求</li>
+                            </ul>
                         </div>
                     </div>
-                    <div class="button-container">
-                        <button onclick="generateStory()" id="generateStoryBtn" class="primary-btn" aria-describedby="generate-help">
-                            <span class="spinner" id="storySpinner"></span>
-                            <span id="generateStoryText">🎯 生成故事</span>
-                        </button>
-                    </div>
-                    <div id="generate-help" class="sr-only">点击根据您的主题生成故事</div>
 
-                    <div class="form-group">
-                        <label for="storyText" class="sr-only">生成的故事内容</label>
-                        <textarea
-                            id="storyText"
-                            class="text-input"
-                            placeholder="您生成的故事将在这里显示..."
-                            aria-describedby="story-help"
-                            readonly
-                        ></textarea>
-                        <div id="story-help" class="sr-only">生成的故事内容将在此处显示</div>
+                    <!-- Right Side: Story Generation Section -->
+                    <div class="story-generation-panel">
+                        <div class="story-container">
+                            <h1 id="story-title">✨ 故事生成</h1>
+                            <div class="form-group">
+                                <label for="themeInput" class="sr-only">故事主题</label>
+                                <input
+                                    type="text"
+                                    id="themeInput"
+                                    class="theme-input"
+                                    placeholder="输入您的故事主题（例如：'太空中的神奇冒险'）..."
+                                    aria-describedby="theme-help"
+                                    autocomplete="off"
+                                >
+                                <div id="theme-help" class="sr-only">为您的故事输入主题或话题</div>
+                            </div>
+
+                            <!-- Language Selection for Story -->
+                            <div class="form-group">
+                                <label class="language-label">选择故事语言 / Choose Story Language:</label>
+                                <div class="language-options">
+                                    <label class="radio-option">
+                                        <input type="radio" name="storyLanguage" value="chinese" checked>
+                                        <span class="radio-text">🇨🇳 中文</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="storyLanguage" value="english">
+                                        <span class="radio-text">🇺🇸 English</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="button-container">
+                                <button onclick="generateStory()" id="generateStoryBtn" class="primary-btn" aria-describedby="generate-help">
+                                    <span class="spinner" id="storySpinner"></span>
+                                    <span id="generateStoryText">🎯 生成故事</span>
+                                </button>
+                            </div>
+                            <div id="generate-help" class="sr-only">点击根据您的主题生成故事</div>
+
+                            <div class="form-group">
+                                <label for="storyText" class="sr-only">生成的故事内容</label>
+                                <textarea
+                                    id="storyText"
+                                    class="text-input"
+                                    placeholder="您生成的故事将在这里显示..."
+                                    aria-describedby="story-help"
+                                    readonly
+                                ></textarea>
+                                <div id="story-help" class="sr-only">生成的故事内容将在此处显示</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

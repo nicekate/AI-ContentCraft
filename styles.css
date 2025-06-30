@@ -43,6 +43,9 @@
   --color-secondary-hover: var(--secondary-700);
   --color-success: var(--success-500);
   --color-warning: var(--warning-500);
+  --color-warning-light: var(--warning-100);
+  --color-warning-lighter: var(--warning-50);
+  --color-warning-dark: var(--warning-700);
   --color-error: var(--error-500);
 
   /* Background Colors */
