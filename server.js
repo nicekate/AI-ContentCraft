@@ -48,26 +48,43 @@ async function generateSpeechWithMiniMax(text, voiceId = "Wise_Woman", language 
             languageBoost = "Chinese";
         }
 
-        const output = await replicate.run(
-            "minimax/speech-02-turbo",
-            {
-                input: {
-                    text: text,
-                    voice_id: voiceId,
-                    speed: 1,
-                    volume: 1,
-                    pitch: 0,
-                    sample_rate: 32000,
-                    bitrate: 128000,
-                    channel: "mono",
-                    language_boost: languageBoost,
-                    english_normalization: true
-                }
-            }
-        );
+        const inputParams = {
+            text: text,
+            voice_id: voiceId,
+            speed: 1,
+            volume: 1,
+            pitch: 0,
+            sample_rate: 32000,
+            bitrate: 128000,
+            channel: "mono",
+            language_boost: languageBoost,
+            english_normalization: true
+        };
 
-        console.log('MiniMax TTS output:', output);
-        return output; // 返回音频文件URL
+        // console.log('MiniMax TTS input parameters:', JSON.stringify(inputParams, null, 2));
+
+        // 使用 predictions API 来获得更好的控制
+        const prediction = await replicate.predictions.create({
+            version: "minimax/speech-02-turbo",
+            input: inputParams
+        });
+
+        // console.log('Prediction created:', prediction.id);
+
+        // 等待预测完成
+        let finalPrediction = prediction;
+        while (finalPrediction.status === 'starting' || finalPrediction.status === 'processing') {
+            await new Promise(resolve => setTimeout(resolve, 1000)); // 等待1秒
+            finalPrediction = await replicate.predictions.get(prediction.id);
+            // console.log('Prediction status:', finalPrediction.status);
+        }
+
+        if (finalPrediction.status === 'succeeded') {
+            console.log('MiniMax TTS completed successfully');
+            return finalPrediction.output; // 返回音频文件URL
+        } else {
+            throw new Error(`Prediction failed with status: ${finalPrediction.status}, error: ${finalPrediction.error}`);
+        }
     } catch (error) {
         console.error('MiniMax TTS error:', error);
         throw error;
@@ -122,6 +139,11 @@ app.post('/generate', async (req, res) => {
 // 修改生成并合并音频的路由
 app.post('/generate-and-merge', async (req, res) => {
     const { sections, language = "english" } = req.body;
+    console.log('=== /generate-and-merge request ===');
+    console.log('Language received:', language);
+    console.log('Sections count:', sections?.length);
+    // console.log('Request body:', JSON.stringify(req.body, null, 2));
+
     if (!sections || sections.length === 0) {
         return res.status(400).json({
             success: false,
