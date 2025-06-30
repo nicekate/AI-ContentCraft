@@ -371,120 +371,198 @@
 
             <!-- Podcast Generator Page -->
             <section id="podcastPage" class="page" aria-labelledby="podcast-title">
-                <div class="podcast-container">
-                    <h1 id="podcast-title">🎙️ 播客生成器</h1>
-
-                    <!-- Topic Input Section -->
-                    <div class="topic-section">
-                        <div class="form-group">
-                            <label for="podcastTopic" class="form-label">📝 播客主题或内容：</label>
-                            <textarea
-                                id="podcastTopic"
-                                class="topic-input"
-                                placeholder="在此输入您的播客主题、大纲或内容。可以尽可能详细..."
-                                rows="6"
-                                aria-describedby="topic-help"
-                            ></textarea>
-                            <div id="topic-help" class="sr-only">输入您播客的主题或内容</div>
+                <div class="podcast-page-layout">
+                    <!-- Left Side: Instructions Panel -->
+                    <div class="instructions-panel">
+                        <div class="instructions-header">
+                            <h2>📋 操作指南</h2>
+                            <p class="instructions-subtitle">按照以下步骤创建您的播客</p>
                         </div>
 
-                        <!-- Language Selection for Podcast -->
-                        <div class="form-group">
-                            <label class="language-label">选择播客语言 / Choose Podcast Language:</label>
-                            <div class="language-options">
-                                <label class="radio-option">
-                                    <input type="radio" name="podcastLanguage" value="chinese" checked>
-                                    <span class="radio-text">🇨🇳 中文</span>
-                                </label>
-                                <label class="radio-option">
-                                    <input type="radio" name="podcastLanguage" value="english">
-                                    <span class="radio-text">🇺🇸 English</span>
-                                </label>
+                        <div class="instruction-steps">
+                            <div class="instruction-step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h3>输入播客主题</h3>
+                                    <p>在右侧输入框中描述您的播客主题、大纲或内容，可以尽可能详细</p>
+                                </div>
+                                <div class="step-arrow">→</div>
+                            </div>
+
+                            <div class="instruction-step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h3>选择语言</h3>
+                                    <p>选择您希望生成播客的语言：中文或英文</p>
+                                </div>
+                                <div class="step-arrow">→</div>
+                            </div>
+
+                            <div class="instruction-step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h3>生成播客内容</h3>
+                                    <p>点击"生成播客内容"按钮，AI将为您创作播客对话内容</p>
+                                </div>
+                                <div class="step-arrow">→</div>
+                            </div>
+
+                            <div class="instruction-step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h3>选择主持人声音</h3>
+                                    <p>为主持人A和主持人B选择合适的声音，创造不同的角色特色</p>
+                                </div>
+                                <div class="step-arrow">→</div>
+                            </div>
+
+                            <div class="instruction-step">
+                                <div class="step-number">5</div>
+                                <div class="step-content">
+                                    <h3>转换为脚本</h3>
+                                    <p>将播客内容转换为分段脚本，便于编辑和音频生成</p>
+                                </div>
+                                <div class="step-arrow">→</div>
+                            </div>
+
+                            <div class="instruction-step">
+                                <div class="step-number">6</div>
+                                <div class="step-content">
+                                    <h3>生成播客音频</h3>
+                                    <p>为每个对话段落生成语音，创建完整的播客音频文件</p>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="button-container">
-                            <button onclick="generatePodcastContent()" id="generatePodcastBtn" class="primary-btn" aria-describedby="podcast-generate-help">
-                                <span class="spinner" id="podcastSpinner"></span>
-                                <span id="podcastBtnText">🎯 生成播客内容</span>
-                            </button>
+                        <div class="tips-section">
+                            <h3>💡 小贴士</h3>
+                            <ul class="tips-list">
+                                <li>主题描述越详细，生成的播客内容越丰富</li>
+                                <li>可以指定播客类型，如"访谈"、"新闻"、"教育"等</li>
+                                <li>生成后可以编辑对话内容，调整主持人的发言</li>
+                                <li>选择不同的声音可以创造更好的对话效果</li>
+                            </ul>
                         </div>
-                        <div id="podcast-generate-help" class="sr-only">根据您的主题生成播客内容</div>
                     </div>
 
-                    <!-- Script Editor Section -->
-                    <div class="script-editor hidden" id="podcastScriptEditor">
-                        <div class="voice-selection">
-                            <h3>🎭 为主持人选择声音</h3>
-                            <div class="character-voices">
-                                <div class="voice-select-group">
-                                    <label for="hostAVoice">🎤 主持人 A：</label>
-                                    <select id="hostAVoice" class="voice-select" aria-describedby="host-a-help">
-                                        <option value="">正在加载声音...</option>
-                                    </select>
-                                    <div id="host-a-help" class="sr-only">为第一位播客主持人选择声音</div>
+                    <!-- Right Side: Podcast Generation Panel -->
+                    <div class="podcast-generation-panel">
+                        <div class="podcast-container">
+                            <h1 id="podcast-title">🎙️ 播客生成器</h1>
+
+                            <!-- Topic Input Section -->
+                            <div class="topic-section">
+                                <div class="form-group">
+                                    <label for="podcastTopic" class="form-label">📝 播客主题或内容：</label>
+                                    <textarea
+                                        id="podcastTopic"
+                                        class="topic-input"
+                                        placeholder="在此输入您的播客主题、大纲或内容。可以尽可能详细..."
+                                        rows="6"
+                                        aria-describedby="topic-help"
+                                    ></textarea>
+                                    <div id="topic-help" class="sr-only">输入您播客的主题或内容</div>
                                 </div>
-                                <div class="voice-select-group">
-                                    <label for="hostBVoice">🎤 主持人 B：</label>
-                                    <select id="hostBVoice" class="voice-select" aria-describedby="host-b-help">
-                                        <option value="">正在加载声音...</option>
-                                    </select>
-                                    <div id="host-b-help" class="sr-only">为第二位播客主持人选择声音</div>
+
+                                <!-- Language Selection for Podcast -->
+                                <div class="form-group">
+                                    <label class="language-label">选择播客语言 / Choose Podcast Language:</label>
+                                    <div class="language-options">
+                                        <label class="radio-option">
+                                            <input type="radio" name="podcastLanguage" value="chinese" checked>
+                                            <span class="radio-text">🇨🇳 中文</span>
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="podcastLanguage" value="english">
+                                            <span class="radio-text">🇺🇸 English</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="button-container">
+                                    <button onclick="generatePodcastContent()" id="generatePodcastBtn" class="primary-btn" aria-describedby="podcast-generate-help">
+                                        <span class="spinner" id="podcastSpinner"></span>
+                                        <span id="podcastBtnText">🎯 生成播客内容</span>
+                                    </button>
+                                </div>
+                                <div id="podcast-generate-help" class="sr-only">根据您的主题生成播客内容</div>
+                            </div>
+
+                            <!-- Script Editor Section -->
+                            <div class="script-editor hidden" id="podcastScriptEditor">
+                                <div class="voice-selection">
+                                    <h3>🎭 为主持人选择声音</h3>
+                                    <div class="character-voices">
+                                        <div class="voice-select-group">
+                                            <label for="hostAVoice">🎤 主持人 A：</label>
+                                            <select id="hostAVoice" class="voice-select" aria-describedby="host-a-help">
+                                                <option value="">正在加载声音...</option>
+                                            </select>
+                                            <div id="host-a-help" class="sr-only">为第一位播客主持人选择声音</div>
+                                        </div>
+                                        <div class="voice-select-group">
+                                            <label for="hostBVoice">🎤 主持人 B：</label>
+                                            <select id="hostBVoice" class="voice-select" aria-describedby="host-b-help">
+                                                <option value="">正在加载声音...</option>
+                                            </select>
+                                            <div id="host-b-help" class="sr-only">为第二位播客主持人选择声音</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="script-controls">
+                                    <button onclick="generatePodcastScript()" id="generateScriptBtn" class="btn primary convert-script" aria-describedby="script-help">
+                                        <span>📝</span> 转换为脚本
+                                    </button>
+                                    <button onclick="addPodcastDialog('A')" class="action-btn" aria-describedby="add-a-help">
+                                        <span>➕</span> 添加主持人 A
+                                    </button>
+                                    <button onclick="addPodcastDialog('B')" class="action-btn" aria-describedby="add-b-help">
+                                        <span>➕</span> 添加主持人 B
+                                    </button>
+                                    <button onclick="translateAndDownload()" id="translateBtn" class="action-btn" aria-describedby="translate-help">
+                                        <span>🌐</span> 翻译并下载
+                                    </button>
+                                </div>
+
+                                <!-- Hidden help text -->
+                                <div class="sr-only">
+                                    <div id="script-help">将内容转换为对话脚本格式</div>
+                                    <div id="add-a-help">为主持人A添加新的对话部分</div>
+                                    <div id="add-b-help">为主持人B添加新的对话部分</div>
+                                    <div id="translate-help">翻译内容并下载脚本</div>
+                                </div>
+
+                                <div id="podcastSections" class="podcast-sections" role="region" aria-label="播客对话部分">
+                                    <!-- Dialogue sections will be dynamically generated here -->
+                                </div>
+
+                                <div class="button-container">
+                                    <button onclick="generatePodcastAudio()" id="generatePodcastAudioBtn" class="primary-btn" aria-describedby="podcast-audio-help">
+                                        <span class="spinner" id="podcastAudioSpinner"></span>
+                                        <span id="podcastAudioBtnText">🎵 生成播客音频</span>
+                                    </button>
+                                </div>
+                                <div id="podcast-audio-help" class="sr-only">为整个播客生成音频</div>
+
+                                <div class="progress-container hidden" id="podcastProgressContainer" role="status" aria-live="polite">
+                                    <div class="progress-text">
+                                        正在生成：<span id="podcastCurrentProgress">0</span>/<span id="podcastTotalSections">0</span>
+                                    </div>
+                                    <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                                        <div class="progress" id="podcastProgress"></div>
+                                    </div>
+                                </div>
+
+                                <div class="audio-container">
+                                    <label for="podcastAudioPlayer" class="sr-only">生成的播客音频</label>
+                                    <audio id="podcastAudioPlayer" controls preload="none" aria-describedby="podcast-player-help">
+                                        <source src="" type="audio/mp3">
+                                        您的浏览器不支持音频元素。
+                                    </audio>
+                                    <div id="podcast-player-help" class="sr-only">生成播客的音频播放器</div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="script-controls">
-                            <button onclick="generatePodcastScript()" id="generateScriptBtn" class="btn primary convert-script" aria-describedby="script-help">
-                                <span>📝</span> 转换为脚本
-                            </button>
-                            <button onclick="addPodcastDialog('A')" class="action-btn" aria-describedby="add-a-help">
-                                <span>➕</span> 添加主持人 A
-                            </button>
-                            <button onclick="addPodcastDialog('B')" class="action-btn" aria-describedby="add-b-help">
-                                <span>➕</span> 添加主持人 B
-                            </button>
-                            <button onclick="translateAndDownload()" id="translateBtn" class="action-btn" aria-describedby="translate-help">
-                                <span>🌐</span> 翻译并下载
-                            </button>
-                        </div>
-
-                        <!-- Hidden help text -->
-                        <div class="sr-only">
-                            <div id="script-help">将内容转换为对话脚本格式</div>
-                            <div id="add-a-help">为主持人A添加新的对话部分</div>
-                            <div id="add-b-help">为主持人B添加新的对话部分</div>
-                            <div id="translate-help">翻译内容并下载脚本</div>
-                        </div>
-
-                        <div id="podcastSections" class="podcast-sections" role="region" aria-label="播客对话部分">
-                            <!-- Dialogue sections will be dynamically generated here -->
-                        </div>
-
-                        <div class="button-container">
-                            <button onclick="generatePodcastAudio()" id="generatePodcastAudioBtn" class="primary-btn" aria-describedby="podcast-audio-help">
-                                <span class="spinner" id="podcastAudioSpinner"></span>
-                                <span id="podcastAudioBtnText">🎵 生成播客音频</span>
-                            </button>
-                        </div>
-                        <div id="podcast-audio-help" class="sr-only">为整个播客生成音频</div>
-
-                        <div class="progress-container hidden" id="podcastProgressContainer" role="status" aria-live="polite">
-                            <div class="progress-text">
-                                正在生成：<span id="podcastCurrentProgress">0</span>/<span id="podcastTotalSections">0</span>
-                            </div>
-                            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-                                <div class="progress" id="podcastProgress"></div>
-                            </div>
-                        </div>
-
-                        <div class="audio-container">
-                            <label for="podcastAudioPlayer" class="sr-only">生成的播客音频</label>
-                            <audio id="podcastAudioPlayer" controls preload="none" aria-describedby="podcast-player-help">
-                                <source src="" type="audio/mp3">
-                                您的浏览器不支持音频元素。
-                            </audio>
-                            <div id="podcast-player-help" class="sr-only">生成播客的音频播放器</div>
                         </div>
                     </div>
                 </div>
