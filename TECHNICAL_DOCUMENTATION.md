@@ -479,7 +479,11 @@ async function generateSpeechWithMiniMax(text, voiceId = "Wise_Woman") {
 ### 3. 图像生成模块
 
 #### 功能概述
-图像生成模块集成Replicate的Flux-Dev模型，为故事场景自动生成高质量的插图。
+图像生成模块集成Replicate的多个FLUX模型，为故事场景自动生成高质量的插图。支持多种模型选择：
+- **FLUX Schnell**: 快速生成模型（默认）
+- **FLUX Dev**: 高质量生成模型
+- **FLUX 1.1 Pro**: 顶级质量生成模型
+- **FLUX Kontext Pro/Max**: 图像编辑模型（需要输入图像）
 
 #### 工作流程
 1. **提示词生成**：基于故事内容生成图像描述

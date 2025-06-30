@@ -973,6 +973,16 @@
                 <button onclick="generateStoryAudio()" class="primary-btn">
                     Generate Audio
                 </button>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <label for="imageModelSelect" style="font-weight: bold; color: #333;">AI Model:</label>
+                    <select id="imageModelSelect" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: white;">
+                        <option value="black-forest-labs/flux-schnell" selected>FLUX Schnell (Fast)</option>
+                        <option value="black-forest-labs/flux-dev">FLUX Dev (High Quality)</option>
+                        <option value="black-forest-labs/flux-1.1-pro">FLUX 1.1 Pro (Premium)</option>
+                        <option value="black-forest-labs/flux-kontext-pro">FLUX Kontext Pro (Edit)</option>
+                        <option value="black-forest-labs/flux-kontext-max">FLUX Kontext Max (Edit+)</option>
+                    </select>
+                </div>
                 <button onclick="generateAllImages()" id="generateAllImagesBtn" class="primary-btn">
                     Generate All Images
                 </button>
@@ -1117,13 +1127,15 @@
                 }
 
                 // 2. 使用提示词生成图片
+                const selectedModel = document.getElementById('imageModelSelect')?.value || 'black-forest-labs/flux-schnell';
                 const imageResponse = await fetch('/generate-image', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         prompt: promptData.prompt,
                         sectionId: section.id,
-                        seed: isRegenerate ? Math.floor(Math.random() * 1000000) : 1234
+                        seed: isRegenerate ? Math.floor(Math.random() * 1000000) : 1234,
+                        model: selectedModel
                     })
                 });
                 
@@ -1771,12 +1783,14 @@
                 }
 
                 // 生成图片
+                const selectedModel = document.getElementById('imageModelSelect')?.value || 'black-forest-labs/flux-schnell';
                 const imageResponse = await fetch('/generate-image', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         prompt: promptData.prompt,
-                        sectionId: 'story'
+                        sectionId: 'story',
+                        model: selectedModel
                     })
                 });
                 
@@ -1893,10 +1907,14 @@
             btn.parentNode.insertBefore(progressContainer, btn.nextSibling);
 
             try {
+                const selectedModel = document.getElementById('imageModelSelect')?.value || 'black-forest-labs/flux-schnell';
                 const response = await fetch('/generate-all-images', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sections })
+                    body: JSON.stringify({
+                        sections: sections,
+                        model: selectedModel
+                    })
                 });
 
                 const reader = response.body.getReader();

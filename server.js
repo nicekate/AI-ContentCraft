@@ -510,6 +510,39 @@ Format example:
     }
 });
 
+// 获取模型配置的辅助函数
+function getModelConfig(modelName) {
+    const configs = {
+        'black-forest-labs/flux-schnell': {
+            num_inference_steps: 4,
+            guidance: 3.5,
+            requiresInputImage: false
+        },
+        'black-forest-labs/flux-dev': {
+            num_inference_steps: 50,
+            guidance: 3.5,
+            requiresInputImage: false
+        },
+        'black-forest-labs/flux-1.1-pro': {
+            num_inference_steps: 25,
+            guidance: 3.5,
+            requiresInputImage: false
+        },
+        'black-forest-labs/flux-kontext-pro': {
+            num_inference_steps: 30,
+            guidance: 2.5,
+            requiresInputImage: true
+        },
+        'black-forest-labs/flux-kontext-max': {
+            num_inference_steps: 30,
+            guidance: 2.5,
+            requiresInputImage: true
+        }
+    };
+
+    return configs[modelName] || configs['black-forest-labs/flux-schnell'];
+}
+
 // 修改 generate-image-prompt 路由
 app.post('/generate-image-prompt', async (req, res) => {
     const { text, context } = req.body;
@@ -568,29 +601,36 @@ ${context || 'No context provided'}`
 
 // 修改 generate-image 路由
 app.post('/generate-image', async (req, res) => {
-    const { prompt, sectionId, seed = 1234 } = req.body;
-    
+    const { prompt, sectionId, seed = 1234, model = 'black-forest-labs/flux-schnell' } = req.body;
+
     if (!prompt) {
-        return res.status(400).json({ 
-            success: false, 
-            error: 'Prompt is required' 
+        return res.status(400).json({
+            success: false,
+            error: 'Prompt is required'
         });
     }
-    
-    console.log('Generating image for prompt:', prompt);
-    
+
+    console.log('Generating image for prompt:', prompt, 'using model:', model);
+
+    const modelConfig = getModelConfig(model);
+
+    // 检查是否是编辑模型但没有提供输入图像
+    if (modelConfig.requiresInputImage) {
+        return res.status(400).json({
+            success: false,
+            error: 'This model requires an input image for editing. Please use a generation model instead.'
+        });
+    }
+
     try {
-        const output = await replicate.run(
-            "black-forest-labs/flux-dev",
-            {
-                input: {
-                    prompt: prompt,
-                    seed: seed,
-                    num_inference_steps: 50,
-                    guidance: 3.5
-                }
-            }
-        );
+        const inputParams = {
+            prompt: prompt,
+            seed: seed,
+            num_inference_steps: modelConfig.num_inference_steps,
+            guidance: modelConfig.guidance
+        };
+
+        const output = await replicate.run(model, { input: inputParams });
 
         console.log('Raw output from Replicate:', output);
 
@@ -643,7 +683,7 @@ app.post('/generate-image', async (req, res) => {
 
 // 修改 generate-all-images 路由
 app.post('/generate-all-images', async (req, res) => {
-    const { sections } = req.body;
+    const { sections, model = 'black-forest-labs/flux-schnell' } = req.body;
     
     try {
         // 发送开始消息
@@ -737,17 +777,21 @@ ${storyContext}`
             }) + '\n');
 
             try {
-                const output = await replicate.run(
-                    "black-forest-labs/flux-dev",
-                    {
-                        input: {
-                            prompt: prompt,
-                            seed: 1234,
-                            num_inference_steps: 50,
-                            guidance: 3.5
-                        }
-                    }
-                );
+                const modelConfig = getModelConfig(model);
+
+                // 检查是否是编辑模型
+                if (modelConfig.requiresInputImage) {
+                    throw new Error('Editing models require input images and are not supported for batch generation');
+                }
+
+                const inputParams = {
+                    prompt: prompt,
+                    seed: 1234,
+                    num_inference_steps: modelConfig.num_inference_steps,
+                    guidance: modelConfig.guidance
+                };
+
+                const output = await replicate.run(model, { input: inputParams });
 
                 console.log('Raw Replicate output:', output); // 添加日志
 
