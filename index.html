@@ -813,22 +813,26 @@
             const btnText = document.getElementById('btnText');
             const progressContainer = document.getElementById('storyProgressContainer');
             const progress = document.getElementById('storyProgress');
-            
+
             const sectionsData = Array.from(panels).map(panel => ({
                 text: panel.querySelector('.text-input').value.trim(),
                 voice: panel.querySelector('.voice-select').value
             })).filter(s => s.text && s.voice);
 
             if (sectionsData.length === 0) {
-                alert('请输入要转换的文本');
+                showNotification('请输入要转换的文本', 'warning');
                 return;
             }
 
+            // 设置加载状态
             generateBtn.disabled = true;
             spinner.style.display = 'inline-block';
-            btnText.textContent = '正在生成...';
+            btnText.textContent = '🎵 正在生成音频...';
             progressContainer.style.display = 'block';
             progress.style.width = '0%';
+
+            // 显示开始生成的通知
+            showNotification('开始生成音频，请稍候...', 'info');
 
             try {
                 // 获取故事的语言信息
@@ -840,8 +844,13 @@
                     body: JSON.stringify({ sections: sectionsData, language: storyLanguage })
                 });
 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
+                let audioGenerated = false;
 
                 while (true) {
                     const { value, done } = await reader.read();
@@ -850,7 +859,7 @@
                     const lines = decoder.decode(value).split('\n');
                     for (const line of lines) {
                         if (!line.trim()) continue;
-                        
+
                         try {
                             const data = JSON.parse(line);
                             if (data.type === 'progress') {
@@ -859,24 +868,49 @@
                                 const audioPlayer = document.getElementById('multiAudioPlayer');
                                 audioPlayer.src = data.filename;
                                 audioPlayer.load();
-                                
+
                                 // 启用导出按钮
                                 document.getElementById('exportBtn').disabled = false;
-                                
+
                                 // 添加到历史记录
                                 addToHistory(data.filename, `合并音频 (${sectionsData.length} 个部分)`, '多个');
+
+                                // 标记音频已生成
+                                audioGenerated = true;
+
+                                // 显示成功通知
+                                showNotification('🎉 音频生成成功！', 'success');
+
+                                // 滚动到音频播放器
+                                audioPlayer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            } else if (data.type === 'error') {
+                                throw new Error(data.message || '生成过程中发生错误');
                             }
                         } catch (e) {
                             console.warn('Failed to parse line:', line, e);
                         }
                     }
                 }
+
+                // 如果没有收到成功消息，显示警告
+                if (!audioGenerated) {
+                    showNotification('音频生成可能未完成，请检查结果', 'warning');
+                }
+
             } catch (error) {
-                alert('生成失败：' + error.message);
+                console.error('Audio generation error:', error);
+                showNotification('生成音频失败：' + error.message, 'error');
             } finally {
+                // 恢复按钮状态
                 generateBtn.disabled = false;
                 spinner.style.display = 'none';
-                btnText.textContent = '生成所有音频';
+                btnText.textContent = '🎵 生成所有音频';
+
+                // 延迟隐藏进度条
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                    progress.style.width = '0%';
+                }, 2000);
             }
         }
 
@@ -1057,8 +1091,9 @@
             buttonContainer.style.display = 'flex';
             buttonContainer.style.gap = '10px';
             buttonContainer.innerHTML = `
-                <button onclick="generateStoryAudio()" class="primary-btn">
-                    生成音频
+                <button onclick="generateStoryAudio()" id="generateStoryAudioBtn" class="primary-btn">
+                    <span class="spinner" id="audioSpinner"></span>
+                    <span id="storyBtnText">🎵 生成音频</span>
                 </button>
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <label for="imageModelSelect" style="font-weight: bold; color: #333;">AI 模型：</label>
@@ -1363,27 +1398,49 @@
             const currentProgress = document.getElementById('storyCurrentProgress');
             const totalSections = document.getElementById('storyTotalSections');
 
+            if (sections.length === 0) {
+                showNotification('没有可生成音频的脚本段落', 'warning');
+                return;
+            }
+
+            // 设置加载状态
             generateBtn.disabled = true;
             const spinner = generateBtn.querySelector('.spinner');
             const btnText = generateBtn.querySelector('#storyBtnText');
             spinner.style.display = 'inline-block';
-            btnText.textContent = 'Generating...';
+            btnText.textContent = '🎵 正在生成故事音频...';
             progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+
+            // 显示开始生成的通知
+            showNotification('开始生成故事音频，请稍候...', 'info');
 
             try {
                 const sectionsData = Array.from(sections).map(section => ({
-                    text: section.querySelector('.text-input').value,
+                    text: section.querySelector('.text-input').value.trim(),
                     voice: section.querySelector('.voice-select').value
-                }));
+                })).filter(s => s.text && s.voice);
+
+                if (sectionsData.length === 0) {
+                    throw new Error('没有找到有效的文本和声音配置');
+                }
+
+                // 获取故事的语言信息
+                const storyLanguage = document.getElementById('storyText')?.getAttribute('data-language') || 'english';
 
                 const response = await fetch('/generate-and-merge', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sections: sectionsData })
+                    body: JSON.stringify({ sections: sectionsData, language: storyLanguage })
                 });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
+                let audioGenerated = false;
 
                 while (true) {
                     const { value, done } = await reader.read();
@@ -1392,7 +1449,7 @@
                     const lines = decoder.decode(value).split('\n');
                     for (const line of lines) {
                         if (!line.trim()) continue;
-                        
+
                         try {
                             const data = JSON.parse(line);
                             if (data.type === 'progress') {
@@ -1403,19 +1460,41 @@
                                 const audioPlayer = document.getElementById('storyAudioPlayer');
                                 audioPlayer.src = data.filename;
                                 audioPlayer.load();
+
+                                audioGenerated = true;
+
+                                // 显示成功通知
+                                showNotification('🎉 故事音频生成成功！', 'success');
+
+                                // 滚动到音频播放器
+                                audioPlayer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            } else if (data.type === 'error') {
+                                throw new Error(data.message || '生成过程中发生错误');
                             }
                         } catch (e) {
                             console.warn('Failed to parse line:', line, e);
                         }
                     }
                 }
+
+                // 如果没有收到成功消息，显示警告
+                if (!audioGenerated) {
+                    showNotification('故事音频生成可能未完成，请检查结果', 'warning');
+                }
+
             } catch (error) {
-                console.error('Audio generation error:', error);
-                alert('生成音频失败：' + error.message);
+                console.error('Story audio generation error:', error);
+                showNotification('生成故事音频失败：' + error.message, 'error');
             } finally {
                 generateBtn.disabled = false;
                 spinner.style.display = 'none';
-                btnText.textContent = '生成音频';
+                btnText.textContent = '🎵 生成音频';
+
+                // 延迟隐藏进度条
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                    progressBar.style.width = '0%';
+                }, 2000);
             }
         }
 
@@ -1586,7 +1665,7 @@
         async function generateMultiAudio() {
             const sections = document.querySelectorAll('.script-section');
             if (sections.length === 0) {
-                alert('没有可生成音频的部分');
+                showNotification('没有可生成音频的部分', 'warning');
                 return;
             }
 
@@ -1601,11 +1680,14 @@
             // 设置初始状态
             generateBtn.disabled = true;
             spinner.style.display = 'inline-block';
-            buttonText.textContent = 'Generating...';
+            buttonText.textContent = '🎵 正在生成音频...';
             progressContainer.style.display = 'block';
             totalSections.textContent = sections.length;
             currentProgress.textContent = '0';
             progressBar.style.width = '0%';
+
+            // 显示开始生成的通知
+            showNotification('开始生成多声音音频，请稍候...', 'info');
 
             try {
                 // 收集所有段落数据
@@ -1619,15 +1701,22 @@
                 }).filter(s => s.text && s.voice);
 
                 if (sectionsData.length === 0) {
-                    throw new Error('No valid text sections found');
+                    throw new Error('没有找到有效的文本段落');
                 }
+
+                // 获取故事的语言信息
+                const storyLanguage = document.getElementById('storyText')?.getAttribute('data-language') || 'english';
 
                 // 一次性发送所有数据进行处理
                 const response = await fetch('/generate-and-merge', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sections: sectionsData })
+                    body: JSON.stringify({ sections: sectionsData, language: storyLanguage })
                 });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
                 const data = await response.json();
                 if (data.success) {
@@ -1635,26 +1724,33 @@
                     const audioPlayer = document.getElementById('multiAudioPlayer');
                     audioPlayer.src = data.filename;
                     audioPlayer.load();
-                    
+
                     // 设置进度为 100%
                     currentProgress.textContent = sections.length;
                     progressBar.style.width = '100%';
+
+                    // 显示成功通知
+                    showNotification('🎉 多声音音频生成成功！', 'success');
+
+                    // 滚动到音频播放器
+                    audioPlayer.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 } else {
-                    throw new Error(data.error);
+                    throw new Error(data.error || '音频生成失败');
                 }
             } catch (error) {
-                alert('音频生成失败：' + error.message);
+                console.error('Multi-audio generation error:', error);
+                showNotification('音频生成失败：' + error.message, 'error');
             } finally {
                 // 恢复按钮状态
                 generateBtn.disabled = false;
                 spinner.style.display = 'none';
-                buttonText.textContent = '生成音频';
-                
+                buttonText.textContent = '🎵 生成音频';
+
                 // 延迟隐藏进度条
                 setTimeout(() => {
                     progressContainer.style.display = 'none';
                     progressBar.style.width = '0%';
-                }, 1000);
+                }, 2000);
             }
         }
 
@@ -1790,14 +1886,19 @@
         async function generatePodcastAudio() {
             const sections = document.querySelectorAll('.podcast-dialog');
             const topic = document.getElementById('podcastTopic').value.trim();
-            
+
             if (sections.length === 0) {
-                alert('未找到对话部分');
+                showNotification('未找到对话部分', 'warning');
                 return;
             }
 
             const hostAVoice = document.getElementById('hostAVoice').value;
             const hostBVoice = document.getElementById('hostBVoice').value;
+
+            if (!hostAVoice || !hostBVoice) {
+                showNotification('请为两位主持人选择声音', 'warning');
+                return;
+            }
 
             const button = document.getElementById('generatePodcastAudioBtn');
             const spinner = document.getElementById('podcastAudioSpinner');
@@ -1809,11 +1910,14 @@
 
             button.disabled = true;
             spinner.style.display = 'inline-block';
-            btnText.textContent = 'Generating...';
+            btnText.textContent = '🎵 正在生成播客音频...';
             progressContainer.style.display = 'block';
             totalSections.textContent = sections.length;
             currentProgress.textContent = '0';
             progress.style.width = '0%';
+
+            // 显示开始生成的通知
+            showNotification('开始生成播客音频，请稍候...', 'info');
 
             try {
                 const sectionsData = Array.from(sections).map(section => {
@@ -1823,6 +1927,10 @@
                         voice: host === 'A' ? hostAVoice : hostBVoice
                     };
                 }).filter(s => s.text);
+
+                if (sectionsData.length === 0) {
+                    throw new Error('没有找到有效的对话内容');
+                }
 
                 // 获取播客的语言信息
                 const podcastLanguage = document.getElementById('podcastTopic').getAttribute('data-language') || 'english';
@@ -1837,50 +1945,73 @@
                     })
                 });
 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
+                let audioGenerated = false;
 
                 while (true) {
                     const { value, done } = await reader.read();
                     if (done) break;
-                    
+
                     const lines = decoder.decode(value).split('\n');
                     for (const line of lines) {
-                        if (!line) continue;
-                        
-                        const data = JSON.parse(line);
-                        switch (data.type) {
-                            case 'progress':
-                                currentProgress.textContent = data.current;
-                                progress.style.width = `${(data.current / data.total) * 100}%`;
-                                break;
-                            case 'status':
-                                btnText.textContent = data.message;
-                                break;
-                            case 'complete':
-                                if (data.success) {
-                                    const audioPlayer = document.getElementById('podcastAudioPlayer');
-                                    audioPlayer.src = data.filename;
-                                    audioPlayer.load();
-                                    progress.style.width = '100%';
-                                }
-                                break;
-                            case 'error':
-                                throw new Error(data.error);
+                        if (!line.trim()) continue;
+
+                        try {
+                            const data = JSON.parse(line);
+                            switch (data.type) {
+                                case 'progress':
+                                    currentProgress.textContent = data.current;
+                                    progress.style.width = `${(data.current / data.total) * 100}%`;
+                                    break;
+                                case 'status':
+                                    btnText.textContent = data.message;
+                                    break;
+                                case 'complete':
+                                    if (data.success) {
+                                        const audioPlayer = document.getElementById('podcastAudioPlayer');
+                                        audioPlayer.src = data.filename;
+                                        audioPlayer.load();
+                                        progress.style.width = '100%';
+                                        audioGenerated = true;
+
+                                        // 显示成功通知
+                                        showNotification('🎉 播客音频生成成功！', 'success');
+
+                                        // 滚动到音频播放器
+                                        audioPlayer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    }
+                                    break;
+                                case 'error':
+                                    throw new Error(data.error || '生成过程中发生错误');
+                            }
+                        } catch (e) {
+                            console.warn('Failed to parse line:', line, e);
                         }
                     }
                 }
+
+                // 如果没有收到成功消息，显示警告
+                if (!audioGenerated) {
+                    showNotification('播客音频生成可能未完成，请检查结果', 'warning');
+                }
+
             } catch (error) {
-                alert('生成音频失败：' + error.message);
+                console.error('Podcast audio generation error:', error);
+                showNotification('生成播客音频失败：' + error.message, 'error');
             } finally {
                 button.disabled = false;
                 spinner.style.display = 'none';
-                btnText.textContent = '生成音频';
-                
+                btnText.textContent = '🎵 生成播客音频';
+
                 setTimeout(() => {
                     progressContainer.style.display = 'none';
                     progress.style.width = '0%';
-                }, 1000);
+                }, 2000);
             }
         }
 

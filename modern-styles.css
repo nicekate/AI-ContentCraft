@@ -35,9 +35,9 @@ body {
   background: var(--bg-primary);
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-xl);
-  padding: var(--space-8);
+  padding: var(--space-6);
   width: 100%;
-  max-width: 1200px;
+  max-width: 1600px;
   margin: var(--space-4) auto;
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -60,7 +60,7 @@ body {
 .nav-bar {
   background: linear-gradient(135deg, var(--color-primary), var(--primary-700));
   padding: var(--space-4);
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-6);
   border-radius: var(--radius-xl);
   display: flex;
   gap: var(--space-2);
@@ -199,7 +199,7 @@ h3 {
   color: var(--text-primary);
   transition: all var(--transition-normal);
   resize: vertical;
-  min-height: 120px;
+  min-height: 200px;
 }
 
 .text-input:focus,
@@ -225,8 +225,21 @@ h3 {
 }
 
 .topic-input {
-  min-height: 150px;
+  min-height: 250px;
   margin-bottom: var(--space-4);
+}
+
+/* ===== STORY DISPLAY TEXT AREA ===== */
+#storyText {
+  min-height: 300px;
+  font-family: var(--font-family-serif);
+  line-height: var(--line-height-relaxed);
+}
+
+/* ===== PODCAST TOPIC TEXT AREA ===== */
+#podcastTopic {
+  min-height: 280px;
+  line-height: var(--line-height-relaxed);
 }
 
 /* ===== SELECT ELEMENTS ===== */
@@ -262,8 +275,8 @@ h3 {
 /* ===== BUTTON CONTAINERS ===== */
 .button-container {
   display: flex;
-  gap: var(--space-4);
-  margin: var(--space-6) 0;
+  gap: var(--space-3);
+  margin: var(--space-5) 0;
   flex-wrap: wrap;
   align-items: center;
 }
@@ -451,7 +464,7 @@ audio:focus {
 /* ===== STORY PAGE LAYOUT ===== */
 .story-page-layout {
   display: grid;
-  grid-template-columns: 350px 1fr;
+  grid-template-columns: 380px 1fr;
   gap: var(--space-6);
   min-height: 600px;
 }
@@ -625,8 +638,8 @@ audio:focus {
 .podcast-container {
   background: var(--bg-primary);
   border-radius: var(--radius-xl);
-  padding: var(--space-6);
-  margin-bottom: var(--space-6);
+  padding: var(--space-5);
+  margin-bottom: var(--space-5);
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border-light);
   position: relative;
@@ -729,6 +742,15 @@ audio:focus {
   display: block;
 }
 
+/* 多声音语音合成页面中的文本框 - 较小高度 */
+.tab-panel .text-input {
+  min-height: 60px;
+  max-height: 120px;
+  height: auto;
+  line-height: 1.5;
+  overflow-y: auto;
+}
+
 /* ===== SCRIPT SECTIONS ===== */
 .script-section {
   margin-bottom: var(--space-4);
@@ -740,6 +762,15 @@ audio:focus {
   transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
+}
+
+/* 脚本段落中的文本框 - 较小高度 */
+.script-section .text-input {
+  min-height: 60px;
+  max-height: 120px;
+  height: auto;
+  line-height: 1.5;
+  overflow-y: auto;
 }
 
 .script-section:hover {
@@ -861,6 +892,24 @@ audio:focus {
 .podcast-dialog:hover {
   border-color: var(--border-medium);
   box-shadow: var(--shadow-md);
+}
+
+/* 播客对话框中的文本框 - 较小高度 */
+.podcast-dialog textarea {
+  min-height: 60px;
+  max-height: 120px;
+  height: auto;
+  line-height: 1.5;
+  overflow-y: auto;
+}
+
+/* 保持主要文本框的原始大小 */
+#storyText,
+#podcastTopic,
+#simpleTtsText {
+  min-height: 200px !important;
+  max-height: none !important;
+  height: auto !important;
 }
 
 .host-label {
@@ -1071,6 +1120,13 @@ audio:focus {
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1400px) {
+  .story-page-layout {
+    grid-template-columns: 360px 1fr;
+    gap: var(--space-5);
+  }
+}
+
 @media (max-width: 1024px) {
   .story-page-layout {
     grid-template-columns: 300px 1fr;
@@ -1216,6 +1272,15 @@ audio:focus {
   .topic-input {
     padding: var(--space-3);
     font-size: var(--font-size-sm);
+    min-height: 150px;
+  }
+
+  #storyText {
+    min-height: 200px;
+  }
+
+  #podcastTopic {
+    min-height: 180px;
   }
 
   button {
