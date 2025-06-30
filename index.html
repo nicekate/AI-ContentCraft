@@ -976,11 +976,11 @@
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <label for="imageModelSelect" style="font-weight: bold; color: #333;">AI Model:</label>
                     <select id="imageModelSelect" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: white;">
-                        <option value="black-forest-labs/flux-schnell" selected>FLUX Schnell (Fast)</option>
-                        <option value="black-forest-labs/flux-dev">FLUX Dev (High Quality)</option>
-                        <option value="black-forest-labs/flux-1.1-pro">FLUX 1.1 Pro (Premium)</option>
-                        <option value="black-forest-labs/flux-kontext-pro">FLUX Kontext Pro (Edit)</option>
-                        <option value="black-forest-labs/flux-kontext-max">FLUX Kontext Max (Edit+)</option>
+                        <option value="black-forest-labs/flux-schnell" selected>FLUX Schnell</option>
+                        <option value="black-forest-labs/flux-dev">FLUX Dev</option>
+                        <option value="black-forest-labs/flux-1.1-pro">FLUX 1.1 Pro</option>
+                        <option value="black-forest-labs/flux-kontext-pro">FLUX Kontext Pro</option>
+                        <option value="black-forest-labs/flux-kontext-max">FLUX Kontext Max</option>
                     </select>
                 </div>
                 <button onclick="generateAllImages()" id="generateAllImagesBtn" class="primary-btn">
@@ -1065,8 +1065,21 @@
             // 添加图片容器
             const imageContainer = document.createElement('div');
             imageContainer.className = 'section-image-container';
+            const uniqueId = `section-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
             imageContainer.innerHTML = `
-                <button class="generate-image-btn">Generate Image</button>
+                <div class="image-controls">
+                    <button class="generate-image-btn">Generate Image</button>
+                    <div class="model-select-container">
+                        <label for="sectionModel-${uniqueId}" class="model-label">Model:</label>
+                        <select id="sectionModel-${uniqueId}" class="section-model-select">
+                            <option value="black-forest-labs/flux-schnell" selected>FLUX Schnell</option>
+                            <option value="black-forest-labs/flux-dev">FLUX Dev</option>
+                            <option value="black-forest-labs/flux-1.1-pro">FLUX 1.1 Pro</option>
+                            <option value="black-forest-labs/flux-kontext-pro">FLUX Kontext Pro</option>
+                            <option value="black-forest-labs/flux-kontext-max">FLUX Kontext Max</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="image-loading" style="display: none;">
                     <span class="spinner"></span>
                     <span>Generating image...</span>
@@ -1074,7 +1087,16 @@
                 <div class="image-prompt" style="display: none;"></div>
                 <div class="image-preview">
                     <img style="max-width: 100%; display: none;" />
-                    <button class="regenerate-btn" style="display: none;">Regenerate</button>
+                    <div class="regenerate-controls" style="display: none;">
+                        <button class="regenerate-btn">Regenerate</button>
+                        <select class="regenerate-model-select">
+                            <option value="black-forest-labs/flux-schnell">FLUX Schnell</option>
+                            <option value="black-forest-labs/flux-dev">FLUX Dev</option>
+                            <option value="black-forest-labs/flux-1.1-pro">FLUX 1.1 Pro</option>
+                            <option value="black-forest-labs/flux-kontext-pro">FLUX Kontext Pro</option>
+                            <option value="black-forest-labs/flux-kontext-max">FLUX Kontext Max</option>
+                        </select>
+                    </div>
                 </div>
             `;
             
@@ -1098,13 +1120,15 @@
             const preview = imageContainer.querySelector('.image-preview');
             const promptDiv = imageContainer.querySelector('.image-prompt');
             const img = preview.querySelector('img');
+            const regenerateControls = preview.querySelector('.regenerate-controls');
             const regenerateBtn = preview.querySelector('.regenerate-btn');
-            
+            const regenerateModelSelect = preview.querySelector('.regenerate-model-select');
+
             generateBtn.disabled = true;
             loading.style.display = 'flex';
             img.style.display = 'none';
             promptDiv.style.display = 'none';
-            regenerateBtn.style.display = 'none';
+            regenerateControls.style.display = 'none';
             
             try {
                 // 1. 生成提示词
@@ -1127,7 +1151,16 @@
                 }
 
                 // 2. 使用提示词生成图片
-                const selectedModel = document.getElementById('imageModelSelect')?.value || 'black-forest-labs/flux-schnell';
+                let selectedModel;
+                if (isRegenerate) {
+                    // 重新生成时使用重新生成控件中的模型选择
+                    selectedModel = regenerateModelSelect?.value || 'black-forest-labs/flux-schnell';
+                } else {
+                    // 首次生成时使用该段落的模型选择器
+                    const sectionModelSelect = imageContainer.querySelector('.section-model-select');
+                    selectedModel = sectionModelSelect?.value || 'black-forest-labs/flux-schnell';
+                }
+
                 const imageResponse = await fetch('/generate-image', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1138,14 +1171,17 @@
                         model: selectedModel
                     })
                 });
-                
+
                 if (!imageResponse.ok) {
-                    throw new Error(`Failed to generate image: ${imageResponse.status}`);
+                    const errorText = await imageResponse.text();
+                    console.error('Image generation HTTP error:', imageResponse.status, errorText);
+                    throw new Error(`Image generation failed (${imageResponse.status}): ${errorText}`);
                 }
-                
+
                 const imageData = await imageResponse.json();
                 if (!imageData.success) {
-                    throw new Error(imageData.error || 'Failed to generate image');
+                    console.error('Image generation API error:', imageData.error);
+                    throw new Error(imageData.error || 'Image generation failed');
                 }
 
                 // 增强的 URL 处理逻辑
@@ -1180,9 +1216,14 @@
                 newImg.onload = () => {
                     loading.style.display = 'none';
                     newImg.style.display = 'block';
-                    regenerateBtn.style.display = 'block';
+                    regenerateControls.style.display = 'flex';
+
+                    // 设置重新生成模型选择器的默认值为当前使用的模型
+                    if (regenerateModelSelect) {
+                        regenerateModelSelect.value = selectedModel;
+                    }
                 };
-                
+
                 // 设置错误事件
                 newImg.onerror = () => {
                     loading.style.display = 'none';
@@ -1193,7 +1234,7 @@
                 // 设置图片属性
                 newImg.src = imageUrl;
                 newImg.dataset.prompt = promptData.prompt;
-                
+
                 // 替换旧图片
                 const oldImg = preview.querySelector('img');
                 if (oldImg) {
@@ -1201,7 +1242,7 @@
                 } else {
                     preview.appendChild(newImg);
                 }
-                
+
                 // 更新重新生成按钮的事件处理
                 regenerateBtn.onclick = () => generateSectionImage(section, text, true);
                 
@@ -1951,25 +1992,32 @@
                                     const preview = imageContainer.querySelector('.image-preview');
                                     const img = preview.querySelector('img');
                                     const promptDiv = imageContainer.querySelector('.image-prompt');
+                                    const regenerateControls = preview.querySelector('.regenerate-controls');
                                     const regenerateBtn = preview.querySelector('.regenerate-btn');
+                                    const regenerateModelSelect = preview.querySelector('.regenerate-model-select');
                                     const loading = imageContainer.querySelector('.image-loading');
 
                                     promptDiv.textContent = data.prompt;
                                     promptDiv.style.display = 'block';
-                                    
+
                                     // 改进图片加载逻辑
                                     loading.style.display = 'flex';
-                                    
+
                                     // 清除旧的事件监听器
                                     const newImg = img.cloneNode(false);
-                                    
+
                                     newImg.onload = () => {
                                         console.log('Image loaded successfully:', data.imageUrl);
                                         loading.style.display = 'none';
                                         newImg.style.display = 'block';
-                                        regenerateBtn.style.display = 'block';
+                                        regenerateControls.style.display = 'flex';
+
+                                        // 设置重新生成模型选择器的默认值
+                                        if (regenerateModelSelect) {
+                                            regenerateModelSelect.value = 'black-forest-labs/flux-schnell';
+                                        }
                                     };
-                                    
+
                                     newImg.onerror = () => {
                                         console.error('Failed to load image:', data.imageUrl);
                                         loading.style.display = 'none';
@@ -1981,11 +2029,11 @@
                                     newImg.dataset.prompt = data.prompt;
                                     newImg.style.maxWidth = '100%';
                                     newImg.style.display = 'none';
-                                    
+
                                     // 替换旧图片
                                     img.parentNode.replaceChild(newImg, img);
-                                    
-                                    regenerateBtn.onclick = () => generateSectionImage(section, section.querySelector('.text-input').value);
+
+                                    regenerateBtn.onclick = () => generateSectionImage(section, section.querySelector('.text-input').value, true);
                                 }
                                 break;
                             case 'complete':

@@ -729,6 +729,53 @@ audio:focus {
   border: 1px solid var(--border-light);
 }
 
+.image-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.model-select-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.model-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.section-model-select,
+.regenerate-model-select {
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--surface-primary);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  min-width: 140px;
+}
+
+.section-model-select option:disabled,
+.regenerate-model-select option:disabled,
+#imageModelSelect option:disabled {
+  color: var(--text-disabled);
+  background-color: var(--surface-disabled);
+  font-style: italic;
+}
+
+.regenerate-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
 .generate-image-btn,
 .regenerate-btn {
   padding: var(--space-2) var(--space-4);

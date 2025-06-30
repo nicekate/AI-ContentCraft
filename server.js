@@ -614,12 +614,10 @@ app.post('/generate-image', async (req, res) => {
 
     const modelConfig = getModelConfig(model);
 
-    // 检查是否是编辑模型但没有提供输入图像
+    // 注意：FLUX Kontext Pro/Max 虽然是编辑模型，但在没有输入图像时仍能生成图片
+    // 只是会有警告信息，但不影响生成结果
     if (modelConfig.requiresInputImage) {
-        return res.status(400).json({
-            success: false,
-            error: 'This model requires an input image for editing. Please use a generation model instead.'
-        });
+        console.log(`Model ${model} is an editing model but will work without input image (with warnings)`);
     }
 
     try {
@@ -636,17 +634,37 @@ app.post('/generate-image', async (req, res) => {
 
         // 改进输出处理逻辑
         let imageUrl;
-        if (Array.isArray(output)) {
-            imageUrl = output[0];
+        if (typeof output === 'string' && output.startsWith('http')) {
+            // 直接的URL字符串（FLUX Kontext 模型常见格式）
+            imageUrl = output;
+        } else if (Array.isArray(output)) {
+            // 数组格式
+            const firstItem = output[0];
+            // 检查第一个元素是否有 url() 方法
+            if (firstItem && typeof firstItem.url === 'function') {
+                imageUrl = firstItem.url();
+            } else {
+                imageUrl = firstItem;
+            }
         } else if (typeof output === 'object' && output !== null) {
-            // 处理完整的 Replicate 响应对象
-            if (output.output && Array.isArray(output.output)) {
-                imageUrl = output.output[0];
+            // 对象格式 - 处理完整的 Replicate 响应对象
+            // 首先检查是否有 url() 方法
+            if (typeof output.url === 'function') {
+                imageUrl = output.url();
+            } else if (output.output && Array.isArray(output.output)) {
+                const firstItem = output.output[0];
+                if (firstItem && typeof firstItem.url === 'function') {
+                    imageUrl = firstItem.url();
+                } else {
+                    imageUrl = firstItem;
+                }
+            } else if (output.output && typeof output.output === 'string') {
+                imageUrl = output.output;
             } else if (output.urls && output.urls.get) {
                 imageUrl = output.urls.get;
+            } else if (output.url) {
+                imageUrl = output.url;
             }
-        } else if (typeof output === 'string' && output.startsWith('http')) {
-            imageUrl = output;
         }
 
         if (!imageUrl) {
@@ -668,15 +686,33 @@ app.post('/generate-image', async (req, res) => {
             sectionId: sectionId
         });
     } catch (error) {
-        console.error('Error generating image:', error);
+        console.error('=== IMAGE GENERATION ERROR ===');
+        console.error('Model:', model);
+        console.error('Prompt:', prompt);
+        console.error('Error message:', error.message);
         console.error('Error details:', {
             message: error.message,
             stack: error.stack,
-            name: error.name
+            name: error.name,
+            status: error.status,
+            code: error.code
         });
-        res.status(500).json({ 
-            success: false, 
-            error: error.message || 'Failed to generate image'
+
+        // 提供更友好的错误信息
+        let userFriendlyError = error.message;
+        if (error.message.includes('400')) {
+            userFriendlyError = 'Invalid request parameters. Please check your model selection and try again.';
+        } else if (error.message.includes('401')) {
+            userFriendlyError = 'Authentication failed. Please check your API credentials.';
+        } else if (error.message.includes('429')) {
+            userFriendlyError = 'Rate limit exceeded. Please wait a moment and try again.';
+        } else if (error.message.includes('500')) {
+            userFriendlyError = 'Server error occurred. Please try again later.';
+        }
+
+        res.status(500).json({
+            success: false,
+            error: userFriendlyError
         });
     }
 });
@@ -779,9 +815,9 @@ ${storyContext}`
             try {
                 const modelConfig = getModelConfig(model);
 
-                // 检查是否是编辑模型
+                // 注意：编辑模型在没有输入图像时仍能工作，只是会有警告
                 if (modelConfig.requiresInputImage) {
-                    throw new Error('Editing models require input images and are not supported for batch generation');
+                    console.log(`Using editing model ${model} without input image - will generate with warnings`);
                 }
 
                 const inputParams = {
@@ -796,18 +832,39 @@ ${storyContext}`
                 console.log('Raw Replicate output:', output); // 添加日志
 
                 let imageUrl;
-                if (Array.isArray(output)) {
-                    imageUrl = output[0];
-                    console.log('Array output, first item:', imageUrl);
-                } else if (typeof output === 'string') {
+                if (typeof output === 'string' && output.startsWith('http')) {
+                    // 直接的URL字符串（FLUX Kontext 模型常见格式）
                     imageUrl = output;
-                    console.log('String output:', imageUrl);
+                    console.log('String URL output:', imageUrl);
+                } else if (Array.isArray(output)) {
+                    const firstItem = output[0];
+                    // 检查第一个元素是否有 url() 方法
+                    if (firstItem && typeof firstItem.url === 'function') {
+                        imageUrl = firstItem.url();
+                        console.log('Array output with url() method:', imageUrl);
+                    } else {
+                        imageUrl = firstItem;
+                        console.log('Array output, first item:', imageUrl);
+                    }
                 } else if (typeof output === 'object' && output !== null) {
                     console.log('Object output:', output);
-                    if (output.output && Array.isArray(output.output)) {
-                        imageUrl = output.output[0];
+                    // 首先检查是否有 url() 方法
+                    if (typeof output.url === 'function') {
+                        imageUrl = output.url();
+                        console.log('Object output with url() method:', imageUrl);
+                    } else if (output.output && Array.isArray(output.output)) {
+                        const firstItem = output.output[0];
+                        if (firstItem && typeof firstItem.url === 'function') {
+                            imageUrl = firstItem.url();
+                        } else {
+                            imageUrl = firstItem;
+                        }
+                    } else if (output.output && typeof output.output === 'string') {
+                        imageUrl = output.output;
+                    } else if (output.urls && output.urls.get) {
+                        imageUrl = output.urls.get;
                     } else {
-                        imageUrl = output.url || output.output || output.image;
+                        imageUrl = output.url || output.image;
                     }
                 }
 
