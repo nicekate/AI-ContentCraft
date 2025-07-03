@@ -6,6 +6,13 @@
 
 AI ContentCraft is a versatile content creation tool that integrates text generation, speech synthesis, and image generation capabilities. It helps creators quickly generate stories, podcast scripts, and accompanying audio-visual content.
 
+## 📸 Application Screenshots
+
+![Screenshot 1](https://r2.kateviews.com/20250703_161626_307.png)
+![Screenshot 2](https://r2.kateviews.com/20250703_161626_804.png)
+![Screenshot 3](https://r2.kateviews.com/20250703_161626_472.png)
+![Screenshot 4](https://r2.kateviews.com/20250703_161626_388.png)
+
 ## ✨ Latest Updates (v1.2.1)
 
 ### 🎨 Modern UI Overhaul
