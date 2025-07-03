@@ -8,9 +8,9 @@ AI ContentCraft is a versatile content creation tool that integrates text genera
 
 ## 📸 Application Screenshots
 
-![Screenshot 1](https://r2.kateviews.com/20250703_162431_560.png)
-![Screenshot 2](https://r2.kateviews.com/20250703_162431_400.png)
-![Screenshot 3](https://r2.kateviews.com/20250703_162431_951.png)
+![Screenshot 1](https://r2.kateviews.com/20250703_162946_875.jpg)
+![Screenshot 2](https://r2.kateviews.com/20250703_162946_467.jpg)
+![Screenshot 3](https://r2.kateviews.com/20250703_162946_566.jpg)
 ![Screenshot 4](https://r2.kateviews.com/20250703_161626_804.png)
 ![Screenshot 5](https://r2.kateviews.com/20250703_161626_472.png)
 ![Screenshot 6](https://r2.kateviews.com/20250703_161626_388.png)
