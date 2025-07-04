@@ -16,7 +16,12 @@ output/
 # 测试文件
 test-ui.html
 test-podcast-layout.html
+test-*.html
 
 # UI改进说明文档
 UI_OPTIMIZATION_SUMMARY.md
 UI_UPGRADE_GUIDE.md
+ULOPTIMIZATION_SUMMARY.md
+UL_UPGRADE_GUIDE.md
+*OPTIMIZATION*.md
+*UPGRADE*.md

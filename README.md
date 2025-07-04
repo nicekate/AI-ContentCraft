@@ -35,10 +35,6 @@ AI ContentCraft is a versatile content creation tool that integrates text genera
 
 ## Demo
 
-### Screenshots
-![Story Generation](https://r2.kateviews.com/20250120_670.png)
-![Podcast Creation](https://r2.kateviews.com/20250120_171.png)
-
 ### Video Demos
 - [🎬 Bilibili demo](https://www.bilibili.com/video/BV1a8w6eaELj/)
 - [🎬 Youtube demo](https://www.youtube.com/watch?v=2xEOzjsiFUY)
@@ -310,10 +306,6 @@ AI ContentCraft 是一个多功能的内容创作工具，集成了文本生成�
 - 🎨 **现代界面**：响应式设计，支持深色/浅色主题和无障碍功能
 
 ## 演示
-
-### 应用截图
-![故事生成](https://r2.kateviews.com/20250120_670.png)
-![播客创作](https://r2.kateviews.com/20250120_171.png)
 
 ### 视频演示
 - [🎬 B站演示](https://www.bilibili.com/video/BV1a8w6eaELj/)
