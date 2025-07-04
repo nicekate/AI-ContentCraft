@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI 测试 - AI ContentCraft</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="modern-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header role="banner">
+            <nav class="nav-bar" role="navigation">
+                <button class="nav-button active">
+                    <span>📖</span> 故事生成器
+                </button>
+                <button class="nav-button">
+                    <span>🗣️</span> 简单语音合成
+                </button>
+                <button class="nav-button">
+                    <span>🎭</span> 多声音语音合成
+                </button>
+                <button class="nav-button">
+                    <span>🎙️</span> 播客生成器
+                </button>
+            </nav>
+        </header>
+
+        <main>
+            <section class="page active">
+                <div class="story-container">
+                    <h1>✨ UI 测试页面</h1>
+
+                    <div class="form-group">
+                        <label for="testInput" class="form-label">📝 测试输入：</label>
+                        <input
+                            type="text"
+                            id="testInput"
+                            class="theme-input"
+                            placeholder="在此输入测试文本..."
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="testTextarea" class="form-label">📄 测试文本区域：</label>
+                        <textarea
+                            id="testTextarea"
+                            class="text-input"
+                            placeholder="在此输入较长的文本..."
+                        ></textarea>
+                    </div>
+
+                    <div class="voice-select-container">
+                        <label for="testSelect" class="form-label">🎭 测试选择：</label>
+                        <select id="testSelect" class="voice-select">
+                            <option value="">选择一个选项...</option>
+                            <option value="option1">选项 1</option>
+                            <option value="option2">选项 2</option>
+                            <option value="option3">选项 3</option>
+                        </select>
+                    </div>
+                    
+                    <div class="button-container">
+                        <button class="primary-btn" onclick="testNotification('success')">
+                            <span>✅</span> 成功按钮
+                        </button>
+                        <button class="action-btn" onclick="testNotification('warning')">
+                            <span>⚠️</span> 警告按钮
+                        </button>
+                        <button class="delete-btn" onclick="testNotification('error')">
+                            <span>❌</span> 错误按钮
+                        </button>
+                    </div>
+                    
+                    <div class="script-section">
+                        <div class="section-header">
+                            <span class="section-type narration">Narration</span>
+                            <div class="section-controls">
+                                <select class="voice-select">
+                                    <option>Test Voice</option>
+                                </select>
+                                <button class="delete-btn">Delete</button>
+                            </div>
+                        </div>
+                        <div class="section-content">
+                            <textarea class="text-input" placeholder="Test script content..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container" style="display: block;">
+                        <div class="progress-text">Testing progress: 3/5</div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 60%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="audio-container">
+                        <audio controls>
+                            <source src="" type="audio/wav">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="footer">
+            <p>&copy; 2025 AI ContentCraft UI Test Page</p>
+        </footer>
+    </div>
+
+    <script>
+        // Test notification system
+        function showNotification(message, type = 'info', duration = 5000) {
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(n => n.remove());
+            
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            
+            const icon = {
+                'success': '✅',
+                'error': '❌',
+                'warning': '⚠️',
+                'info': 'ℹ️'
+            }[type] || 'ℹ️';
+            
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span class="notification-icon">${icon}</span>
+                    <span class="notification-message">${message}</span>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateY(-100%)';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, duration);
+        }
+        
+        function testNotification(type) {
+            const messages = {
+                'success': '这是一个成功通知！',
+                'warning': '这是一个警告通知！',
+                'error': '这是一个错误通知！',
+                'info': '这是一个信息通知！'
+            };
+
+            showNotification(messages[type] || messages.info, type);
+        }
+        
+        // Test loading states
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function() {
+                if (this.classList.contains('loading')) return;
+                
+                this.classList.add('loading');
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    this.classList.remove('loading');
+                    this.disabled = false;
+                }, 2000);
+            });
+        });
+        
+        // Test form validation
+        document.getElementById('testInput').addEventListener('blur', function() {
+            if (!this.value.trim()) {
+                this.classList.add('error');
+            } else {
+                this.classList.remove('error');
+            }
+        });
+    </script>
+</body>
+</html>
